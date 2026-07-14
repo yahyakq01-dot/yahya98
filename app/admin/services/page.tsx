@@ -1,11 +1,14 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { ServicesManager } from "@/components/admin/forms/ServicesManager";
 
-export default function ServicesAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Manage Services"
-      description="Edit the services you offer, their descriptions, tools, and display order."
-      section="services"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function ServicesAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("services")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return <ServicesManager services={data ?? []} />;
 }

@@ -1,11 +1,14 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { CodeProjectsManager } from "@/components/admin/forms/CodeProjectsManager";
 
-export default function CodeProjectsAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Manage Code Projects"
-      description="Curate the SQL and Python analysis projects, their code snippets, features, and stats."
-      section="code projects"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function CodeProjectsAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("code_projects")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return <CodeProjectsManager projects={data ?? []} />;
 }

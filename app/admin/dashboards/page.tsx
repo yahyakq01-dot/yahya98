@@ -1,11 +1,14 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { DashboardsManager } from "@/components/admin/forms/DashboardsManager";
 
-export default function DashboardsAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Manage Dashboards"
-      description="Add, edit, reorder, and remove the Power BI dashboard projects showcased on your portfolio."
-      section="dashboards"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function DashboardsAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("dashboards")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return <DashboardsManager dashboards={data ?? []} />;
 }

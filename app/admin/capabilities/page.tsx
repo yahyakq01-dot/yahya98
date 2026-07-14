@@ -1,11 +1,25 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { CapabilitiesManager } from "@/components/admin/forms/CapabilitiesManager";
 
-export default function CapabilitiesAdminPage() {
+export const dynamic = "force-dynamic";
+
+export default async function CapabilitiesAdminPage() {
+  const supabase = await createClient();
+  const [{ data: dashboardCaps }, { data: codeCaps }] = await Promise.all([
+    supabase
+      .from("dashboard_capabilities")
+      .select("*")
+      .order("display_order", { ascending: true }),
+    supabase
+      .from("code_capabilities")
+      .select("*")
+      .order("display_order", { ascending: true }),
+  ]);
+
   return (
-    <AdminPagePlaceholder
-      title="Manage Capabilities"
-      description="Edit the dashboard and code capability highlights shown across sections."
-      section="capabilities"
+    <CapabilitiesManager
+      dashboardCaps={dashboardCaps ?? []}
+      codeCaps={codeCaps ?? []}
     />
   );
 }

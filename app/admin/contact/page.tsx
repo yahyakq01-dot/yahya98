@@ -1,11 +1,15 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { ContactInfoForm } from "@/components/admin/forms/ContactInfoForm";
 
-export default function ContactAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Contact Info"
-      description="Manage your email, WhatsApp, Fiverr, response time, and availability."
-      section="contact info"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function ContactAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("contact_info")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  return <ContactInfoForm initial={data} />;
 }

@@ -1,11 +1,15 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { SiteSettingsForm } from "@/components/admin/forms/SiteSettingsForm";
 
-export default function SiteSettingsAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Site Settings"
-      description="Configure the site name, monogram, and global hero and footer copy."
-      section="site settings"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function SiteSettingsAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("site_settings")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  return <SiteSettingsForm initial={data} />;
 }

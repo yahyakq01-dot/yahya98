@@ -1,11 +1,15 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { HeroForm } from "@/components/admin/forms/HeroForm";
 
-export default function HeroAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Edit Hero Section"
-      description="Manage the headline, eyebrow text, subheadline, and ticker shown on the homepage hero."
-      section="hero"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function HeroAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("site_settings")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  return <HeroForm initial={data} />;
 }

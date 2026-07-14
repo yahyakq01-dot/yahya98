@@ -1,11 +1,14 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { TestimonialsManager } from "@/components/admin/forms/TestimonialsManager";
 
-export default function TestimonialsAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Manage Testimonials"
-      description="Add and update client reviews, ratings, and repeat-client badges."
-      section="testimonials"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function TestimonialsAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("testimonials")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return <TestimonialsManager testimonials={data ?? []} />;
 }

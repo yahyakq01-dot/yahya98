@@ -1,11 +1,14 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { StatsManager } from "@/components/admin/forms/StatsManager";
 
-export default function StatsAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Manage Stats"
-      description="Update the headline statistics shown in the About section."
-      section="stats"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function StatsAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("stats")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return <StatsManager stats={data ?? []} />;
 }

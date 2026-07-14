@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { ToastProvider } from "@/components/admin/ui/ToastProvider";
 
 export const dynamic = "force-dynamic";
 
@@ -30,8 +31,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <AdminShell user={{ email: user.email!, fullName: adminCheck.full_name }}>
-      {children}
-    </AdminShell>
+    <ToastProvider>
+      <AdminShell user={{ email: user.email!, fullName: adminCheck.full_name }}>
+        {children}
+      </AdminShell>
+    </ToastProvider>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -21,9 +21,13 @@ import {
   Menu,
   X,
   ExternalLink,
+  RefreshCw,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 import { LogoutButton } from "./LogoutButton";
+import { refreshLiveSite } from "@/app/admin/_actions/refresh";
+import { useToast } from "./ui/ToastProvider";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -207,7 +211,20 @@ interface AdminShellProps {
 
 export function AdminShell({ user, children }: AdminShellProps) {
   const pathname = usePathname();
+  const toast = useToast();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [refreshing, startRefresh] = useTransition();
+
+  const handleRefresh = () => {
+    startRefresh(async () => {
+      try {
+        await refreshLiveSite();
+        toast.success("Live site refreshed.");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Refresh failed.");
+      }
+    });
+  };
 
   return (
     <div className="flex h-screen bg-background-base text-ink-primary overflow-hidden">
@@ -274,6 +291,19 @@ export function AdminShell({ user, children }: AdminShellProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border border-white/10 text-ink-secondary hover:text-ink-primary hover:bg-white/5 transition disabled:opacity-60"
+            >
+              {refreshing ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <RefreshCw size={14} />
+              )}
+              Force refresh
+            </button>
             <a
               href="/"
               target="_blank"

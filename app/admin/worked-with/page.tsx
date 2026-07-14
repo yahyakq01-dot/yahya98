@@ -1,11 +1,14 @@
-import { AdminPagePlaceholder } from "@/components/admin/AdminPagePlaceholder";
+import { createClient } from "@/lib/supabase/server";
+import { WorkedWithManager } from "@/components/admin/forms/WorkedWithManager";
 
-export default function WorkedWithAdminPage() {
-  return (
-    <AdminPagePlaceholder
-      title="Manage Worked With"
-      description="Maintain the list of organizations, clients, and tools shown in the marquee."
-      section="worked with"
-    />
-  );
+export const dynamic = "force-dynamic";
+
+export default async function WorkedWithAdminPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("worked_with")
+    .select("*")
+    .order("display_order", { ascending: true });
+
+  return <WorkedWithManager items={data ?? []} />;
 }

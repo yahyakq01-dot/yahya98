@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "app.powerbi.com" },
       { protocol: "https", hostname: "fiverr-res.cloudinary.com" },
       { protocol: "https", hostname: "img.youtube.com" },
+      // Supabase Storage public URLs (uploaded profile photo, images, etc.)
+      { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
 };
