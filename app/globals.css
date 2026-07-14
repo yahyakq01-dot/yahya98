@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background-base: #0A0613;
+  --background-surface: #13101E;
+  --background-elevated: #1A1525;
+
+  --brand-primary: #7C3AED;
+  --brand-light: #A78BFA;
+  --brand-glow: #C4B5FD;
+
+  --ink-primary: #FFFFFF;
+  --ink-secondary: #A1A1AA;
+  --ink-muted: #71717A;
+
+  --success: #22C55E;
+  --gold: #FBBF24;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-background-base text-ink-primary font-sans antialiased;
+}
+
+::selection {
+  background-color: rgba(139, 92, 246, 0.3);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7C3AED;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #A78BFA;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #FFFFFF 0%, #A78BFA 50%, #C4B5FD 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-label {
+  @apply text-xs uppercase tracking-widest text-brand-light inline-flex items-center;
+}
+
+.section-label::before,
+.section-label::after {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background-color: #A78BFA;
+  vertical-align: middle;
+  margin-left: 12px;
+  margin-right: 12px;
+}
