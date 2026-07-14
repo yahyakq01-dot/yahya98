@@ -2,11 +2,16 @@
 
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
-import { TESTIMONIALS, TESTIMONIAL_STATS } from "@/lib/data";
+import { TESTIMONIAL_STATS } from "@/lib/data";
 import SectionHeading from "@/components/ui/SectionHeading";
 import TestimonialCard from "@/components/ui/TestimonialCard";
+import type { TestimonialRow } from "@/lib/supabase/database.types";
 
-export default function Testimonials() {
+interface TestimonialsProps {
+  testimonials: TestimonialRow[];
+}
+
+export default function Testimonials({ testimonials }: TestimonialsProps) {
   return (
     <section
       id="testimonials"
@@ -52,7 +57,7 @@ export default function Testimonials() {
 
         {/* Testimonial grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {TESTIMONIALS.map((testimonial, index) => (
+          {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
               initial={{ opacity: 0, y: 30 }}

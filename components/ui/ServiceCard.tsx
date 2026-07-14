@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { LayoutDashboard, Sheet, Database, TrendingUp, Code2, LucideIcon } from "lucide-react";
-import { Service } from "@/lib/data";
+import type { ServiceRow } from "@/lib/supabase/database.types";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard,
@@ -13,7 +13,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 interface ServiceCardProps {
-  service: Service;
+  service: ServiceRow;
   index: number;
 }
 

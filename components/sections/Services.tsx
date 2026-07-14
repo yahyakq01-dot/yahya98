@@ -2,9 +2,13 @@
 
 import SectionHeading from "@/components/ui/SectionHeading";
 import ServiceCard from "@/components/ui/ServiceCard";
-import { SERVICES } from "@/lib/data";
+import type { ServiceRow } from "@/lib/supabase/database.types";
 
-export default function Services() {
+interface ServicesProps {
+  services: ServiceRow[];
+}
+
+export default function Services({ services }: ServicesProps) {
   return (
     <section id="services" className="py-32 px-6 md:px-8 relative overflow-hidden">
       {/* Background decoration */}
@@ -27,7 +31,7 @@ export default function Services() {
 
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
-          {SERVICES.map((service, index) => (
+          {services.map((service, index) => (
             <ServiceCard key={service.number} service={service} index={index} />
           ))}
         </div>

@@ -1,14 +1,24 @@
 "use client";
 
 import { Globe, Star } from "lucide-react";
-import { Testimonial } from "@/lib/data";
+import type { TestimonialRow } from "@/lib/supabase/database.types";
 
 interface TestimonialCardProps {
-  testimonial: Testimonial;
+  testimonial: TestimonialRow;
 }
 
 export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
-  const { name, initials, country, flag, source, rating, quote, service, repeat } = testimonial;
+  const {
+    name,
+    initials,
+    country,
+    flag,
+    source,
+    rating,
+    quote,
+    service,
+    is_repeat_client: repeat,
+  } = testimonial;
 
   return (
     <div className="relative bg-background-surface border border-white/8 rounded-3xl p-7 lg:p-8 h-full flex flex-col hover:border-brand-primary/40 transition-all duration-400 hover:-translate-y-1">

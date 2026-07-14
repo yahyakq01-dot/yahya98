@@ -10,7 +10,7 @@ import {
   TrendingUp,
   LucideIcon,
 } from "lucide-react";
-import { DashboardCapability } from "@/lib/data";
+import type { DashboardCapabilityRow } from "@/lib/supabase/database.types";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Gauge,
@@ -22,7 +22,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 interface CapabilityCardProps {
-  capability: DashboardCapability;
+  capability: DashboardCapabilityRow;
   index: number;
 }
 

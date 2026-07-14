@@ -3,6 +3,7 @@
 import { motion, type Variants } from "framer-motion";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
+import type { ProfileRow, SiteSettingsRow } from "@/lib/supabase/database.types";
 
 const containerVariants: Variants = {
   hidden: {},
@@ -40,7 +41,27 @@ const bottomBarVariants: Variants = {
   },
 };
 
-export default function Hero() {
+interface HeroProps {
+  profile: ProfileRow | null;
+  siteSettings: SiteSettingsRow | null;
+}
+
+export default function Hero({ profile, siteSettings }: HeroProps) {
+  const eyebrow = siteSettings?.hero_eyebrow ?? "AVAILABLE FOR PROJECTS";
+  const line1 = siteSettings?.hero_line_1 ?? "Turning";
+  const line2 = siteSettings?.hero_line_2 ?? "Complex Data";
+  const line3 = siteSettings?.hero_line_3 ?? "Into Clear Decisions.";
+  const subheadline =
+    siteSettings?.hero_subheadline ??
+    "Your partner in transforming raw numbers into actionable insights — building Power BI dashboards, financial models, and data systems that drive smarter business decisions.";
+  const ticker = siteSettings?.hero_ticker ?? "Decoding Data Into Decisions ↗";
+  const photoUrl = profile?.photo_url ?? "/profile.png";
+  const cvUrl = profile?.cv_url ?? "/cv.pdf";
+
+  // Preserve the accent-coloured trailing period on the last headline line.
+  const line3HasPeriod = line3.endsWith(".");
+  const line3Base = line3HasPeriod ? line3.slice(0, -1) : line3;
+
   return (
     <section
       id="home"
@@ -64,19 +85,20 @@ export default function Hero() {
           >
             <span className="h-2.5 w-2.5 rounded-full bg-success animate-pulse" />
             <span className="text-xs font-medium uppercase tracking-[0.2em] text-ink-secondary">
-              Available For Projects
+              {eyebrow}
             </span>
           </motion.div>
 
           <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-black tracking-tight leading-[1.05] text-ink-primary">
             <motion.span variants={itemVariants} className="block">
-              Turning
+              {line1}
             </motion.span>
             <motion.span variants={itemVariants} className="block">
-              <span className="gradient-text">Complex Data</span>
+              <span className="gradient-text">{line2}</span>
             </motion.span>
             <motion.span variants={itemVariants} className="block">
-              Into Clear Decisions<span className="text-brand-primary">.</span>
+              {line3Base}
+              {line3HasPeriod && <span className="text-brand-primary">.</span>}
             </motion.span>
           </h1>
 
@@ -84,9 +106,7 @@ export default function Hero() {
             variants={itemVariants}
             className="text-base md:text-lg text-ink-secondary max-w-xl leading-relaxed"
           >
-            Your partner in transforming raw numbers into actionable insights —
-            building Power BI dashboards, financial models, and data systems
-            that drive smarter business decisions.
+            {subheadline}
           </motion.p>
 
           <motion.div
@@ -106,7 +126,7 @@ export default function Hero() {
               Let&apos;s Talk ↗
             </a>
             <a
-              href="/cv.pdf"
+              href={cvUrl}
               download
               className="text-ink-secondary hover:text-ink-primary text-sm font-medium ml-2 underline-offset-4 hover:underline transition-colors"
             >
@@ -133,7 +153,7 @@ export default function Hero() {
               className="absolute inset-0 scale-110 bg-[radial-gradient(circle_at_center,_rgba(124,58,237,0.25)_0%,_transparent_70%)] blur-3xl"
             />
             <Image
-              src="/profile.png"
+              src={photoUrl}
               alt="Yahya Khan — Financial Analyst"
               width={600}
               height={800}
@@ -163,7 +183,7 @@ export default function Hero() {
           </div>
 
           <span className="text-xs uppercase tracking-[0.3em] text-ink-muted ml-auto">
-            Decoding Data Into Decisions ↗
+            {ticker}
           </span>
         </div>
       </motion.div>

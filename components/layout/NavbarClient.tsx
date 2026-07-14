@@ -7,7 +7,11 @@ import { NAV_LINKS } from "@/lib/data";
 import { useActiveSection } from "@/lib/hooks/useActiveSection";
 import MobileMenu from "./MobileMenu";
 
-export default function Navbar() {
+interface NavbarClientProps {
+  siteName: string;
+}
+
+export default function NavbarClient({ siteName }: NavbarClientProps) {
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
@@ -32,6 +36,9 @@ export default function Navbar() {
     };
   }, []);
 
+  const nameHasPeriod = siteName.endsWith(".");
+  const nameBase = nameHasPeriod ? siteName.slice(0, -1) : siteName;
+
   return (
     <>
       <header
@@ -46,7 +53,8 @@ export default function Navbar() {
             href="#home"
             className="text-xl font-bold tracking-tight text-ink-primary"
           >
-            Yahya<span className="text-brand-primary">.</span>
+            {nameBase}
+            {nameHasPeriod && <span className="text-brand-primary">.</span>}
           </a>
 
           <ul className="hidden md:flex items-center gap-8">

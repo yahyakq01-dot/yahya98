@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { motion, Transition } from "framer-motion";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { STATS } from "@/lib/data";
+import type { ProfileRow, StatRow } from "@/lib/supabase/database.types";
 
 const SKILL_CHIPS = ["Power BI", "Excel", "SQL", "Python", "Finance"];
 
@@ -15,7 +15,19 @@ const fadeUp = (delay: number) => ({
   transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1.0], delay } as Transition,
 });
 
-export default function About() {
+interface AboutProps {
+  profile: ProfileRow | null;
+  stats: StatRow[];
+}
+
+export default function About({ profile, stats }: AboutProps) {
+  const photoUrl = profile?.photo_url ?? "/profile.png";
+  const name = profile?.name ?? "Yahya Khan";
+  const role = profile?.role ?? "Financial Analyst & BI Developer";
+  const bio =
+    profile?.short_bio ??
+    "I build dashboards, financial models & SQL/Python solutions — turning messy data into decisions that grow your business.";
+
   return (
     <section id="about" className="min-h-screen py-32 px-6 md:px-8">
       <div className="max-w-7xl mx-auto">
@@ -38,8 +50,8 @@ export default function About() {
             <div className="relative mx-auto w-32 h-32">
               <div className="w-full h-full rounded-full overflow-hidden ring-2 ring-brand-primary/30">
                 <Image
-                  src="/profile.png"
-                  alt="Yahya Khan"
+                  src={photoUrl}
+                  alt={name}
                   fill
                   className="object-cover"
                 />
@@ -54,16 +66,15 @@ export default function About() {
 
             {/* Name & role */}
             <div className="mt-6 flex flex-col items-center text-center">
-              <h3 className="text-2xl font-bold text-ink-primary">Yahya Khan</h3>
+              <h3 className="text-2xl font-bold text-ink-primary">{name}</h3>
               <p className="text-sm font-medium text-brand-light mt-1">
-                Financial Analyst &amp; BI Developer
+                {role}
               </p>
             </div>
 
             {/* Bio */}
             <p className="mt-4 text-sm text-ink-secondary leading-relaxed text-center">
-              I build dashboards, financial models &amp; SQL/Python solutions — turning messy data
-              into decisions that grow your business.
+              {bio}
             </p>
 
             {/* Skill chips */}
@@ -81,7 +92,7 @@ export default function About() {
             {/* CTAs */}
             <div className="mt-7 flex flex-col gap-3 w-full">
               <a
-                href="https://www.fiverr.com/yahya_qureshii"
+                href={profile?.fiverr_url ?? "https://www.fiverr.com/yahya_qureshii"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-brand-primary text-white rounded-xl py-3 text-sm font-semibold hover:bg-violet-500 transition text-center"
@@ -136,7 +147,7 @@ export default function About() {
               className="bg-background-surface border border-white/8 rounded-3xl p-7"
             >
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {STATS.map((stat) => (
+                {stats.map((stat) => (
                   <div key={stat.label} className="flex flex-col items-center text-center">
                     <span className="text-3xl md:text-4xl font-black text-ink-primary gradient-text">
                       {stat.value}

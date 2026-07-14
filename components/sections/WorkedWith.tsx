@@ -4,9 +4,15 @@ import { motion } from "framer-motion";
 import SectionLabel from "@/components/ui/SectionLabel";
 import Marquee from "@/components/ui/Marquee";
 import LogoTile from "@/components/ui/LogoTile";
-import { WORKED_WITH } from "@/lib/data";
+import type { WorkedWithRow } from "@/lib/supabase/database.types";
 
-export default function WorkedWith() {
+interface WorkedWithProps {
+  items: WorkedWithRow[];
+}
+
+export default function WorkedWith({ items }: WorkedWithProps) {
+  if (items.length === 0) return null;
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 30 }}
@@ -20,7 +26,7 @@ export default function WorkedWith() {
       </div>
 
       <Marquee speed={40} direction="left" fadeEdges>
-        {WORKED_WITH.map((entry) => (
+        {items.map((entry) => (
           <LogoTile
             key={entry.name}
             name={entry.name}
