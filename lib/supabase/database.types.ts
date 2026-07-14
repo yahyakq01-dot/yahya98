@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export interface ProfileRow {
+export type ProfileRow = {
   id: string;
   name: string;
   role: string;
@@ -21,7 +21,7 @@ export interface ProfileRow {
   updated_at: string;
 }
 
-export interface SiteSettingsRow {
+export type SiteSettingsRow = {
   id: string;
   site_name: string;
   monogram: string;
@@ -37,7 +37,7 @@ export interface SiteSettingsRow {
   updated_at: string;
 }
 
-export interface ContactInfoRow {
+export type ContactInfoRow = {
   id: string;
   email: string;
   whatsapp: string | null;
@@ -51,7 +51,7 @@ export interface ContactInfoRow {
   updated_at: string;
 }
 
-export interface StatRow {
+export type StatRow = {
   id: string;
   value: string;
   label: string;
@@ -60,7 +60,7 @@ export interface StatRow {
   updated_at: string;
 }
 
-export interface ServiceRow {
+export type ServiceRow = {
   id: string;
   number: string;
   title: string;
@@ -73,7 +73,7 @@ export interface ServiceRow {
   updated_at: string;
 }
 
-export interface DashboardRow {
+export type DashboardRow = {
   id: string;
   slug: string;
   title: string;
@@ -88,7 +88,7 @@ export interface DashboardRow {
   updated_at: string;
 }
 
-export interface DashboardCapabilityRow {
+export type DashboardCapabilityRow = {
   id: string;
   title: string;
   description: string;
@@ -98,7 +98,7 @@ export interface DashboardCapabilityRow {
   updated_at: string;
 }
 
-export interface CodeProjectRow {
+export type CodeProjectRow = {
   id: string;
   slug: string;
   title: string;
@@ -117,7 +117,7 @@ export interface CodeProjectRow {
   updated_at: string;
 }
 
-export interface CodeCapabilityRow {
+export type CodeCapabilityRow = {
   id: string;
   title: string;
   icon: string;
@@ -126,7 +126,7 @@ export interface CodeCapabilityRow {
   updated_at: string;
 }
 
-export interface TestimonialRow {
+export type TestimonialRow = {
   id: string;
   name: string;
   initials: string;
@@ -142,7 +142,7 @@ export interface TestimonialRow {
   updated_at: string;
 }
 
-export interface WorkedWithRow {
+export type WorkedWithRow = {
   id: string;
   name: string;
   monogram: string;
@@ -152,7 +152,7 @@ export interface WorkedWithRow {
   updated_at: string;
 }
 
-export interface SocialLinkRow {
+export type SocialLinkRow = {
   id: string;
   label: string;
   href: string;
@@ -163,69 +163,98 @@ export interface SocialLinkRow {
   updated_at: string;
 }
 
-export interface Database {
+export type AdminUserRow = {
+  id: string;
+  email: string;
+  full_name: string | null;
+  created_at: string;
+}
+
+export type Database = {
   public: {
     Tables: {
       profile: {
         Row: ProfileRow;
         Insert: Omit<ProfileRow, "id" | "created_at" | "updated_at">;
         Update: Partial<ProfileRow>;
+        Relationships: [];
       };
       site_settings: {
         Row: SiteSettingsRow;
         Insert: Omit<SiteSettingsRow, "id" | "created_at" | "updated_at">;
         Update: Partial<SiteSettingsRow>;
+        Relationships: [];
       };
       contact_info: {
         Row: ContactInfoRow;
         Insert: Omit<ContactInfoRow, "id" | "created_at" | "updated_at">;
         Update: Partial<ContactInfoRow>;
+        Relationships: [];
       };
       stats: {
         Row: StatRow;
         Insert: Omit<StatRow, "id" | "created_at" | "updated_at">;
         Update: Partial<StatRow>;
+        Relationships: [];
       };
       services: {
         Row: ServiceRow;
         Insert: Omit<ServiceRow, "id" | "created_at" | "updated_at">;
         Update: Partial<ServiceRow>;
+        Relationships: [];
       };
       dashboards: {
         Row: DashboardRow;
         Insert: Omit<DashboardRow, "id" | "created_at" | "updated_at">;
         Update: Partial<DashboardRow>;
+        Relationships: [];
       };
       dashboard_capabilities: {
         Row: DashboardCapabilityRow;
         Insert: Omit<DashboardCapabilityRow, "id" | "created_at" | "updated_at">;
         Update: Partial<DashboardCapabilityRow>;
+        Relationships: [];
       };
       code_projects: {
         Row: CodeProjectRow;
         Insert: Omit<CodeProjectRow, "id" | "created_at" | "updated_at">;
         Update: Partial<CodeProjectRow>;
+        Relationships: [];
       };
       code_capabilities: {
         Row: CodeCapabilityRow;
         Insert: Omit<CodeCapabilityRow, "id" | "created_at" | "updated_at">;
         Update: Partial<CodeCapabilityRow>;
+        Relationships: [];
       };
       testimonials: {
         Row: TestimonialRow;
         Insert: Omit<TestimonialRow, "id" | "created_at" | "updated_at">;
         Update: Partial<TestimonialRow>;
+        Relationships: [];
       };
       worked_with: {
         Row: WorkedWithRow;
         Insert: Omit<WorkedWithRow, "id" | "created_at" | "updated_at">;
         Update: Partial<WorkedWithRow>;
+        Relationships: [];
       };
       social_links: {
         Row: SocialLinkRow;
         Insert: Omit<SocialLinkRow, "id" | "created_at" | "updated_at">;
         Update: Partial<SocialLinkRow>;
+        Relationships: [];
+      };
+      admin_users: {
+        Row: AdminUserRow;
+        Insert: Omit<AdminUserRow, "id" | "created_at">;
+        Update: Partial<AdminUserRow>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
