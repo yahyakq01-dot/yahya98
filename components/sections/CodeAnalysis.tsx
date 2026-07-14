@@ -1,15 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  CODE_CAPABILITIES,
-  CODE_PROJECTS,
-  CODE_STACK,
-} from "@/lib/data";
+import { CODE_STACK } from "@/lib/data";
 import SectionHeading from "@/components/ui/SectionHeading";
 import SectionLabel from "@/components/ui/SectionLabel";
 import CapabilityPill from "@/components/ui/CapabilityPill";
 import CodeProjectCard from "@/components/ui/CodeProjectCard";
+import type {
+  CodeProjectRow,
+  CodeCapabilityRow,
+} from "@/lib/supabase/database.types";
 
 const pillContainer = {
   hidden: {},
@@ -25,7 +25,12 @@ const pillItem = {
   show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-export default function CodeAnalysis() {
+interface CodeAnalysisProps {
+  projects: CodeProjectRow[];
+  capabilities: CodeCapabilityRow[];
+}
+
+export default function CodeAnalysis({ projects, capabilities }: CodeAnalysisProps) {
   return (
     <section
       id="sql-python"
@@ -62,7 +67,7 @@ export default function CodeAnalysis() {
           viewport={{ once: true, margin: "-80px" }}
           className="mt-14 flex flex-wrap justify-center gap-3"
         >
-          {CODE_CAPABILITIES.map((cap) => (
+          {capabilities.map((cap) => (
             <motion.div key={cap.title} variants={pillItem}>
               <CapabilityPill icon={cap.icon} title={cap.title} />
             </motion.div>
@@ -95,7 +100,7 @@ export default function CodeAnalysis() {
 
           {/* Projects stack */}
           <div className="flex flex-col gap-8">
-            {CODE_PROJECTS.map((project, index) => (
+            {projects.map((project, index) => (
               <CodeProjectCard key={project.slug} project={project} index={index} />
             ))}
           </div>

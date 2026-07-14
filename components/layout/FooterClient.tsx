@@ -2,14 +2,8 @@
 
 import { useState } from "react";
 import { ArrowRight, Heart } from "lucide-react";
-import {
-  NAV_LINKS,
-  SOCIAL_LINKS,
-  CONTACT_INFO,
-  FOOTER_TAGLINE,
-  FOOTER_BIO,
-  type SocialLink,
-} from "@/lib/data";
+import { NAV_LINKS } from "@/lib/data";
+import type { SocialLinkRow } from "@/lib/supabase/database.types";
 
 function SocialIcon({ icon, className }: { icon: string; className?: string }) {
   const cls = `w-[14px] h-[14px] ${className ?? ""}`;
@@ -42,7 +36,23 @@ function SocialIcon({ icon, className }: { icon: string; className?: string }) {
   return null;
 }
 
-export default function Footer() {
+interface FooterClientProps {
+  footerTagline: string;
+  footerBio: string;
+  monogram: string;
+  fiverrUrl: string;
+  whatsapp: string;
+  socialLinks: SocialLinkRow[];
+}
+
+export default function FooterClient({
+  footerTagline,
+  footerBio,
+  monogram,
+  fiverrUrl,
+  whatsapp,
+  socialLinks,
+}: FooterClientProps) {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -53,7 +63,7 @@ export default function Footer() {
     setEmail("");
   }
 
-  const waUrl = `https://wa.me/${CONTACT_INFO.whatsapp.replace(/\D/g, "")}`;
+  const waUrl = `https://wa.me/${whatsapp.replace(/\D/g, "")}`;
 
   return (
     <footer className="relative pt-24 pb-8 px-6 md:px-8 border-t border-white/[0.08] bg-background-base overflow-hidden">
@@ -69,7 +79,7 @@ export default function Footer() {
             {/* Monogram + name */}
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-primary/30 to-brand-primary/5 border border-brand-primary/30 flex items-center justify-center">
-                <span className="text-xl font-black gradient-text">YK</span>
+                <span className="text-xl font-black gradient-text">{monogram}</span>
               </div>
               <div>
                 <p className="text-xl font-bold text-ink-primary">
@@ -83,7 +93,7 @@ export default function Footer() {
 
             {/* Big tagline */}
             <h3 className="text-3xl md:text-4xl font-black text-ink-primary leading-tight tracking-tight">
-              {FOOTER_TAGLINE.split("Future of Data Decisions").map((part, i) =>
+              {footerTagline.split("Future of Data Decisions").map((part, i) =>
                 i === 0 ? (
                   <span key={i}>
                     {part}
@@ -96,7 +106,7 @@ export default function Footer() {
             </h3>
 
             {/* Bio */}
-            <p className="text-sm text-ink-secondary leading-relaxed max-w-md">{FOOTER_BIO}</p>
+            <p className="text-sm text-ink-secondary leading-relaxed max-w-md">{footerBio}</p>
 
             {/* Newsletter */}
             <div className="mt-2 max-w-md bg-background-surface border border-white/10 rounded-2xl p-5">
@@ -185,7 +195,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href={CONTACT_INFO.fiverrUrl}
+                    href={fiverrUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm font-medium text-ink-secondary hover:text-ink-primary transition-colors"
@@ -212,7 +222,7 @@ export default function Footer() {
                 Socials
               </p>
               <ul className="flex flex-col gap-4">
-                {SOCIAL_LINKS.map((social: SocialLink) => (
+                {socialLinks.map((social) => (
                   <li key={social.label}>
                     <a
                       href={social.href}

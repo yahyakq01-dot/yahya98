@@ -3,12 +3,12 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Clock, Mail, MapPin, MessageCircle } from "lucide-react";
-import { CONTACT_INFO } from "@/lib/data";
 import SectionHeading from "@/components/ui/SectionHeading";
 import ContactMethodCard, {
   ContactAccent,
 } from "@/components/ui/ContactMethodCard";
 import ContactForm from "@/components/ui/ContactForm";
+import type { ContactInfoRow } from "@/lib/supabase/database.types";
 
 interface ContactCard {
   key: string;
@@ -23,42 +23,6 @@ interface ContactCard {
   accentColor: ContactAccent;
 }
 
-const whatsappDigits = CONTACT_INFO.whatsapp.replace(/[^0-9]/g, "");
-const whatsappText =
-  "Hi%20Yahya%2C%20I%20found%20your%20portfolio%20and%20would%20love%20to%20discuss%20a%20data%20project.";
-const whatsappHref = `https://wa.me/${whatsappDigits}?text=${whatsappText}`;
-
-const CONTACT_CARDS: ContactCard[] = [
-  {
-    key: "whatsapp",
-    icon: <MessageCircle size={22} />,
-    label: "INSTANT MESSAGE",
-    title: "WhatsApp",
-    meta: `📞 ${CONTACT_INFO.whatsappDisplay}`,
-    description:
-      "Send a quick message for fast questions, project inquiries, or scope chats. I typically reply within minutes during working hours.",
-    cta: "Chat on WhatsApp",
-    href: whatsappHref,
-    external: true,
-    accentColor: "green",
-  },
-  {
-    key: "fiverr",
-    icon: (
-      <span className="font-black text-lg tracking-tight">fi</span>
-    ),
-    label: "VERIFIED PLATFORM",
-    title: "Fiverr DM",
-    meta: CONTACT_INFO.fiverrDisplay,
-    description:
-      "Message me through Fiverr for a verified, escrow-backed engagement. Best for fixed-scope project starts with milestone protection.",
-    cta: "Open Fiverr Profile",
-    href: CONTACT_INFO.fiverrUrl,
-    external: true,
-    accentColor: "fiverr-green",
-  },
-];
-
 interface InfoStrip {
   key: string;
   icon: ReactNode;
@@ -66,28 +30,76 @@ interface InfoStrip {
   value: string;
 }
 
-const INFO_STRIPS: InfoStrip[] = [
-  {
-    key: "response",
-    icon: <Clock size={16} className="text-brand-light" />,
-    label: "Response Time",
-    value: CONTACT_INFO.responseTime,
-  },
-  {
-    key: "location",
-    icon: <MapPin size={16} className="text-brand-light" />,
-    label: "Location",
-    value: CONTACT_INFO.location,
-  },
-  {
-    key: "email",
-    icon: <Mail size={16} className="text-brand-light" />,
-    label: "Email",
-    value: CONTACT_INFO.email,
-  },
-];
+interface ContactProps {
+  contactInfo: ContactInfoRow | null;
+}
 
-export default function Contact() {
+export default function Contact({ contactInfo }: ContactProps) {
+  const email = contactInfo?.email ?? "yahyaqureshi012@gmail.com";
+  const whatsapp = contactInfo?.whatsapp ?? "+923331234567";
+  const whatsappDisplay = contactInfo?.whatsapp_display ?? "+92 333 123 4567";
+  const fiverrUrl =
+    contactInfo?.fiverr_url ?? "https://www.fiverr.com/yahya_qureshii";
+  const fiverrDisplay = contactInfo?.fiverr_display ?? "fiverr.com/yahya_qureshii";
+  const responseTime = contactInfo?.response_time ?? "Within 24 hours";
+  const location =
+    contactInfo?.location ?? "Pakistan 🇵🇰 · Available Worldwide";
+
+  const whatsappDigits = whatsapp.replace(/[^0-9]/g, "");
+  const whatsappText =
+    "Hi%20Yahya%2C%20I%20found%20your%20portfolio%20and%20would%20love%20to%20discuss%20a%20data%20project.";
+  const whatsappHref = `https://wa.me/${whatsappDigits}?text=${whatsappText}`;
+
+  const CONTACT_CARDS: ContactCard[] = [
+    {
+      key: "whatsapp",
+      icon: <MessageCircle size={22} />,
+      label: "INSTANT MESSAGE",
+      title: "WhatsApp",
+      meta: `📞 ${whatsappDisplay}`,
+      description:
+        "Send a quick message for fast questions, project inquiries, or scope chats. I typically reply within minutes during working hours.",
+      cta: "Chat on WhatsApp",
+      href: whatsappHref,
+      external: true,
+      accentColor: "green",
+    },
+    {
+      key: "fiverr",
+      icon: <span className="font-black text-lg tracking-tight">fi</span>,
+      label: "VERIFIED PLATFORM",
+      title: "Fiverr DM",
+      meta: fiverrDisplay,
+      description:
+        "Message me through Fiverr for a verified, escrow-backed engagement. Best for fixed-scope project starts with milestone protection.",
+      cta: "Open Fiverr Profile",
+      href: fiverrUrl,
+      external: true,
+      accentColor: "fiverr-green",
+    },
+  ];
+
+  const INFO_STRIPS: InfoStrip[] = [
+    {
+      key: "response",
+      icon: <Clock size={16} className="text-brand-light" />,
+      label: "Response Time",
+      value: responseTime,
+    },
+    {
+      key: "location",
+      icon: <MapPin size={16} className="text-brand-light" />,
+      label: "Location",
+      value: location,
+    },
+    {
+      key: "email",
+      icon: <Mail size={16} className="text-brand-light" />,
+      label: "Email",
+      value: email,
+    },
+  ];
+
   return (
     <section
       id="contact"
@@ -143,7 +155,7 @@ export default function Contact() {
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay: 2 * 0.12 }}
           >
-            <ContactForm />
+            <ContactForm email={email} />
           </motion.div>
         </div>
 

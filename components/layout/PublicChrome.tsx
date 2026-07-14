@@ -1,13 +1,21 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import Preloader from "./Preloader";
-import Navbar from "./Navbar";
-import Footer from "./Footer";
 
 const HIDE_CHROME_PATHS = ["/login", "/admin"];
 
-export function PublicChrome({ children }: { children: React.ReactNode }) {
+export function PublicChrome({
+  children,
+  preloader,
+  navbar,
+  footer,
+}: {
+  children: ReactNode;
+  preloader: ReactNode;
+  navbar: ReactNode;
+  footer: ReactNode;
+}) {
   const pathname = usePathname();
   const shouldHide = HIDE_CHROME_PATHS.some((path) =>
     pathname.startsWith(path)
@@ -19,10 +27,10 @@ export function PublicChrome({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Preloader />
-      <Navbar />
+      {preloader}
+      {navbar}
       {children}
-      <Footer />
+      {footer}
     </>
   );
 }

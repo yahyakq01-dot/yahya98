@@ -2,9 +2,12 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { Send } from "lucide-react";
-import { CONTACT_INFO } from "@/lib/data";
 
 type FormField = "name" | "email" | "subject" | "message";
+
+interface ContactFormProps {
+  email?: string;
+}
 
 interface FormState {
   name: string;
@@ -35,7 +38,9 @@ function validate(state: FormState): Partial<Record<FormField, string>> {
   return errors;
 }
 
-export default function ContactForm() {
+export default function ContactForm({
+  email: contactEmail = "yahyaqureshi012@gmail.com",
+}: ContactFormProps) {
   const [form, setForm] = useState<FormState>(INITIAL_STATE);
   const [attempted, setAttempted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -67,7 +72,7 @@ export default function ContactForm() {
     const body = encodeURIComponent(
       `From: ${form.name.trim()} (${form.email.trim()})\n\n${form.message.trim()}`,
     );
-    const mailto = `mailto:${CONTACT_INFO.email}?subject=${subject}&body=${body}`;
+    const mailto = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
 
     window.location.href = mailto;
     setSubmitted(true);

@@ -3,15 +3,15 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
-import { Dashboard } from "@/lib/data";
+import type { DashboardRow } from "@/lib/supabase/database.types";
 
 interface DashboardCardProps {
-  dashboard: Dashboard;
+  dashboard: DashboardRow;
   index: number;
 }
 
 export default function DashboardCard({ dashboard, index }: DashboardCardProps) {
-  const hasLive = Boolean(dashboard.livePreview);
+  const hasLive = Boolean(dashboard.live_preview_url);
 
   const cardClassName =
     "group relative block rounded-3xl overflow-hidden cursor-pointer aspect-[16/10] bg-background-surface border border-white/[0.08] hover:border-brand-primary/40 transition-all duration-500";
@@ -20,7 +20,7 @@ export default function DashboardCard({ dashboard, index }: DashboardCardProps) 
     <>
       {/* Layer 1 — dashboard image (z-0 base) */}
       <Image
-        src={dashboard.image}
+        src={dashboard.image_url}
         alt={dashboard.title}
         fill
         sizes="(max-width: 1024px) 100vw, 50vw"
@@ -108,9 +108,9 @@ export default function DashboardCard({ dashboard, index }: DashboardCardProps) 
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, delay: (index % 2) * 0.1, ease: "easeOut" }}
     >
-      {hasLive && dashboard.livePreview ? (
+      {hasLive && dashboard.live_preview_url ? (
         <a
-          href={dashboard.livePreview}
+          href={dashboard.live_preview_url}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Open live preview of ${dashboard.title}`}

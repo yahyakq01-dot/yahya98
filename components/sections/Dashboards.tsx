@@ -5,9 +5,18 @@ import SectionHeading from "@/components/ui/SectionHeading";
 import SectionLabel from "@/components/ui/SectionLabel";
 import CapabilityCard from "@/components/ui/CapabilityCard";
 import DashboardCard from "@/components/ui/DashboardCard";
-import { DASHBOARDS, DASHBOARD_CAPABILITIES, DATA_STACK } from "@/lib/data";
+import { DATA_STACK } from "@/lib/data";
+import type {
+  DashboardRow,
+  DashboardCapabilityRow,
+} from "@/lib/supabase/database.types";
 
-export default function Dashboards() {
+interface DashboardsProps {
+  dashboards: DashboardRow[];
+  capabilities: DashboardCapabilityRow[];
+}
+
+export default function Dashboards({ dashboards, capabilities }: DashboardsProps) {
   return (
     <section id="dashboards" className="py-32 px-6 md:px-8 relative overflow-hidden">
       {/* Background decoration */}
@@ -28,7 +37,7 @@ export default function Dashboards() {
 
         {/* Capabilities grid */}
         <div className="mt-16 mb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {DASHBOARD_CAPABILITIES.map((capability, index) => (
+          {capabilities.map((capability, index) => (
             <CapabilityCard
               key={capability.title}
               capability={capability}
@@ -62,7 +71,7 @@ export default function Dashboards() {
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {DASHBOARDS.map((dashboard, index) => (
+            {dashboards.map((dashboard, index) => (
               <DashboardCard
                 key={dashboard.slug}
                 dashboard={dashboard}

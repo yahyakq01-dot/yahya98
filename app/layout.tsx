@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SITE } from "@/lib/data";
 import { PublicChrome } from "@/components/layout/PublicChrome";
+import PreloaderServer from "@/components/layout/PreloaderServer";
+import NavbarServer from "@/components/layout/NavbarServer";
+import FooterServer from "@/components/layout/FooterServer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -51,7 +54,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${inter.variable}`}>
       <body className="bg-background-base text-ink-primary antialiased">
-        <PublicChrome>{children}</PublicChrome>
+        <PublicChrome
+          preloader={<PreloaderServer />}
+          navbar={<NavbarServer />}
+          footer={<FooterServer />}
+        >
+          {children}
+        </PublicChrome>
       </body>
     </html>
   );

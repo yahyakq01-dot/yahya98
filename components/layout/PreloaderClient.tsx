@@ -7,7 +7,11 @@ const STORAGE_KEY = "yk_preloader_seen";
 const TOTAL_DURATION_MS = 2200;
 const FADE_DURATION_S = 0.6;
 
-export default function Preloader() {
+interface PreloaderClientProps {
+  monogram: string;
+}
+
+export default function PreloaderClient({ monogram }: PreloaderClientProps) {
   const [shouldRender, setShouldRender] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -52,7 +56,7 @@ export default function Preloader() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           >
-            YK
+            {monogram}
           </motion.h1>
           <p className="mt-6 text-xs uppercase tracking-[0.3em] text-ink-muted">
             Loading Experience

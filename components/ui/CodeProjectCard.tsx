@@ -1,241 +1,115 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CodeProject } from "@/lib/data";
+import type { CodeProjectRow } from "@/lib/supabase/database.types";
 
 interface CodeProjectCardProps {
-  project: CodeProject;
+  project: CodeProjectRow;
   index: number;
 }
 
-function SqlSnippet() {
-  return (
-    <div className="font-mono text-xs lg:text-sm leading-relaxed text-ink-secondary min-h-[280px]">
-      <div>
-        <span className="text-ink-muted italic">{"-- Customer Segmentation Analysis"}</span>
-      </div>
-      <div>
-        <span className="text-brand-light">{"WITH"}</span>
-        {" customer_spending "}
-        <span className="text-brand-light">{"AS"}</span>
-        {" ("}
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"SELECT"}</span>
-      </div>
-      <div className="pl-8">{"customer_id,"}</div>
-      <div className="pl-8">
-        <span className="text-brand-light">{"SUM"}</span>
-        {"(total_sales) "}
-        <span className="text-brand-light">{"AS"}</span>
-        {" lifetime_value,"}
-      </div>
-      <div className="pl-8">
-        <span className="text-brand-light">{"COUNT"}</span>
-        {"("}
-        <span className="text-brand-light">{"DISTINCT"}</span>
-        {" order_id) "}
-        <span className="text-brand-light">{"AS"}</span>
-        {" orders,"}
-      </div>
-      <div className="pl-8">
-        <span className="text-brand-light">{"AVG"}</span>
-        {"(profit_margin) "}
-        <span className="text-brand-light">{"AS"}</span>
-        {" avg_margin"}
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"FROM"}</span>
-        {" bike_sales"}
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"GROUP BY"}</span>
-        {" customer_id"}
-      </div>
-      <div>{")"}</div>
-      <div className="mt-2">
-        <span className="text-brand-light">{"SELECT"}</span>
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"CASE"}</span>
-      </div>
-      <div className="pl-8">
-        <span className="text-brand-light">{"WHEN"}</span>
-        {" lifetime_value > "}
-        <span className="text-orange-300/80">{"5000"}</span>
-        {" "}
-        <span className="text-brand-light">{"THEN"}</span>
-        {" "}
-        <span className="text-yellow-300/80">{"'VIP'"}</span>
-      </div>
-      <div className="pl-8">
-        <span className="text-brand-light">{"WHEN"}</span>
-        {" lifetime_value > "}
-        <span className="text-orange-300/80">{"1000"}</span>
-        {" "}
-        <span className="text-brand-light">{"THEN"}</span>
-        {" "}
-        <span className="text-yellow-300/80">{"'Regular'"}</span>
-      </div>
-      <div className="pl-8">
-        <span className="text-brand-light">{"ELSE"}</span>
-        {" "}
-        <span className="text-yellow-300/80">{"'New'"}</span>
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"END AS"}</span>
-        {" segment,"}
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"COUNT"}</span>
-        {"(*) "}
-        <span className="text-brand-light">{"AS"}</span>
-        {" customers,"}
-      </div>
-      <div className="pl-4">
-        <span className="text-brand-light">{"AVG"}</span>
-        {"(orders) "}
-        <span className="text-brand-light">{"AS"}</span>
-        {" avg_orders"}
-      </div>
-      <div>
-        <span className="text-brand-light">{"FROM"}</span>
-        {" customer_spending"}
-      </div>
-      <div>
-        <span className="text-brand-light">{"GROUP BY"}</span>
-        {" segment"}
-      </div>
-      <div>
-        <span className="text-brand-light">{"ORDER BY"}</span>
-        {" customers "}
-        <span className="text-brand-light">{"DESC"}</span>
-        {";"}
-      </div>
-    </div>
-  );
+type CodeLang = "python" | "sql";
+
+const SQL_KEYWORDS = new Set([
+  "WITH", "AS", "SELECT", "SUM", "COUNT", "DISTINCT", "AVG", "MIN", "MAX",
+  "FROM", "GROUP", "BY", "CASE", "WHEN", "THEN", "ELSE", "END", "ORDER",
+  "DESC", "ASC", "WHERE", "AND", "OR", "ON", "JOIN", "INNER", "LEFT",
+  "RIGHT", "HAVING", "LIMIT", "NOT", "NULL", "IN",
+]);
+
+const PY_KEYWORDS = new Set([
+  "import", "as", "from", "def", "return", "for", "in", "if", "else",
+  "elif", "while", "with", "lambda", "and", "or", "not", "None", "True",
+  "False", "class", "try", "except", "finally", "raise", "pass",
+]);
+
+interface Token {
+  text: string;
+  cls: string;
 }
 
-function PythonSnippet() {
+function tokenizeLine(line: string, lang: CodeLang): Token[] {
+  const trimmed = line.trimStart();
+  const commentMarker = lang === "python" ? "#" : "--";
+  if (trimmed.startsWith(commentMarker)) {
+    return [{ text: line, cls: "text-ink-muted italic" }];
+  }
+
+  const tokens: Token[] = [];
+  const re =
+    /('(?:[^']|'')*')|(\d+(?:\.\d+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\s+)|([^\sA-Za-z0-9_']+)/g;
+  const keywords = lang === "python" ? PY_KEYWORDS : SQL_KEYWORDS;
+  let prevChar = "";
+  let match: RegExpExecArray | null;
+
+  while ((match = re.exec(line)) !== null) {
+    const [full, str, num, word, ws] = match;
+    if (str !== undefined) {
+      tokens.push({ text: full, cls: "text-yellow-300/80" });
+      prevChar = "'";
+    } else if (num !== undefined) {
+      tokens.push({ text: full, cls: "text-orange-300/80" });
+      prevChar = num[num.length - 1];
+    } else if (word !== undefined) {
+      const isKeyword =
+        lang === "sql"
+          ? keywords.has(word.toUpperCase())
+          : keywords.has(word);
+      let cls = "";
+      if (isKeyword) cls = "text-brand-light";
+      else if (prevChar === ".") cls = "text-ink-primary";
+      tokens.push({ text: full, cls });
+      prevChar = word[word.length - 1];
+    } else if (ws !== undefined) {
+      tokens.push({ text: full, cls: "" });
+    } else {
+      tokens.push({ text: full, cls: "" });
+      prevChar = full[full.length - 1];
+    }
+  }
+
+  return tokens;
+}
+
+function CodeBlock({ snippet, lang }: { snippet: string; lang: CodeLang }) {
+  // Seed data stores newlines as literal "\n" sequences — normalise them.
+  const normalized = snippet.replace(/\\n/g, "\n");
+  const lines = normalized.split("\n");
+
   return (
     <div className="font-mono text-xs lg:text-sm leading-relaxed text-ink-secondary min-h-[280px]">
-      <div>
-        <span className="text-ink-muted italic">{"# Cohort Retention Analysis - RDX Sports"}</span>
-      </div>
-      <div>
-        <span className="text-brand-light">{"import"}</span>
-        {" pandas "}
-        <span className="text-brand-light">{"as"}</span>
-        {" pd"}
-      </div>
-      <div>
-        <span className="text-brand-light">{"import"}</span>
-        {" matplotlib.pyplot "}
-        <span className="text-brand-light">{"as"}</span>
-        {" plt"}
-      </div>
-      <div className="mt-2">
-        {"df = pd."}
-        <span className="text-ink-primary">{"read_csv"}</span>
-        {"("}
-        <span className="text-yellow-300/80">{"'sales_b2b.csv'"}</span>
-        {")"}
-      </div>
-      <div>
-        {"df["}
-        <span className="text-yellow-300/80">{"'order_period'"}</span>
-        {"] = df["}
-        <span className="text-yellow-300/80">{"'date'"}</span>
-        {"].dt."}
-        <span className="text-ink-primary">{"to_period"}</span>
-        {"("}
-        <span className="text-yellow-300/80">{"'M'"}</span>
-        {")"}
-      </div>
-      <div>
-        {"df["}
-        <span className="text-yellow-300/80">{"'cohort'"}</span>
-        {"] = df."}
-        <span className="text-ink-primary">{"groupby"}</span>
-        {"("}
-        <span className="text-yellow-300/80">{"'client_id'"}</span>
-        {")["}
-        <span className="text-yellow-300/80">{"'date'"}</span>
-        {"] \\"}
-      </div>
-      <div className="pl-4">
-        {"."}
-        <span className="text-ink-primary">{"transform"}</span>
-        {"("}
-        <span className="text-yellow-300/80">{"'min'"}</span>
-        {").dt."}
-        <span className="text-ink-primary">{"to_period"}</span>
-        {"("}
-        <span className="text-yellow-300/80">{"'M'"}</span>
-        {")"}
-      </div>
-      <div className="mt-2">
-        {"cohort_size = df."}
-        <span className="text-ink-primary">{"groupby"}</span>
-        {"("}
-        <span className="text-yellow-300/80">{"'cohort'"}</span>
-        {")["}
-        <span className="text-yellow-300/80">{"'client_id'"}</span>
-        {"] \\"}
-      </div>
-      <div className="pl-4">
-        {"."}
-        <span className="text-ink-primary">{"nunique"}</span>
-        {"()."}
-        <span className="text-ink-primary">{"reset_index"}</span>
-        {"()"}
-      </div>
-      <div className="mt-2">
-        {"retention = df."}
-        <span className="text-ink-primary">{"pivot_table"}</span>
-        {"("}
-      </div>
-      <div className="pl-4">
-        {"index="}
-        <span className="text-yellow-300/80">{"'cohort'"}</span>
-        {","}
-      </div>
-      <div className="pl-4">
-        {"columns="}
-        <span className="text-yellow-300/80">{"'order_period'"}</span>
-        {","}
-      </div>
-      <div className="pl-4">
-        {"values="}
-        <span className="text-yellow-300/80">{"'client_id'"}</span>
-        {","}
-      </div>
-      <div className="pl-4">
-        {"aggfunc="}
-        <span className="text-yellow-300/80">{"'nunique'"}</span>
-      </div>
-      <div>{")"}</div>
-      <div className="mt-2">
-        {"retention_pct = retention."}
-        <span className="text-ink-primary">{"divide"}</span>
-        {"("}
-      </div>
-      <div className="pl-4">
-        {"cohort_size["}
-        <span className="text-yellow-300/80">{"'client_id'"}</span>
-        {"].values, axis="}
-        <span className="text-orange-300/80">{"0"}</span>
-      </div>
-      <div>
-        {") * "}
-        <span className="text-orange-300/80">{"100"}</span>
-      </div>
+      {lines.map((line, i) => {
+        const tokens = tokenizeLine(line, lang);
+        return (
+          <div key={i} className="whitespace-pre">
+            {tokens.length === 0
+              ? " "
+              : tokens.map((token, j) =>
+                  token.cls ? (
+                    <span key={j} className={token.cls}>
+                      {token.text}
+                    </span>
+                  ) : (
+                    <span key={j}>{token.text}</span>
+                  )
+                )}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 export default function CodeProjectCard({ project, index }: CodeProjectCardProps) {
-  const filename = index === 0 ? "customer_segmentation.sql" : "retention_analysis.py";
+  const features =
+    (project.features as unknown as { icon: string; label: string }[]) ?? [];
+  const stats =
+    (project.stats as unknown as { value: string; label: string }[]) ?? [];
+
+  const filename =
+    project.code_filename ??
+    (index === 0 ? "customer_segmentation.sql" : "retention_analysis.py");
+  const lang: CodeLang = filename.endsWith(".py") ? "python" : "sql";
 
   return (
     <motion.div
@@ -272,7 +146,7 @@ export default function CodeProjectCard({ project, index }: CodeProjectCardProps
 
           {/* Features 2x2 grid */}
           <div className="grid grid-cols-2 gap-3 mt-2">
-            {project.features.map((feature) => (
+            {features.map((feature) => (
               <div
                 key={feature.label}
                 className="bg-background-elevated border border-white/8 rounded-xl px-4 py-3 flex items-center gap-3"
@@ -301,11 +175,11 @@ export default function CodeProjectCard({ project, index }: CodeProjectCardProps
           </div>
 
           {/* Action buttons */}
-          {(project.github || project.livePreview) && (
+          {(project.github_url || project.live_preview_url) && (
             <div className="flex flex-wrap gap-3 mt-2">
-              {project.github && (
+              {project.github_url && (
                 <a
-                  href={project.github}
+                  href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-brand-primary text-white rounded-full px-6 py-3 font-semibold text-sm hover:bg-violet-500 transition"
@@ -313,9 +187,9 @@ export default function CodeProjectCard({ project, index }: CodeProjectCardProps
                   View Code on GitHub →
                 </a>
               )}
-              {project.livePreview && (
+              {project.live_preview_url && (
                 <a
-                  href={project.livePreview}
+                  href={project.live_preview_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="border border-white/20 bg-white/5 rounded-full px-6 py-3 font-semibold text-sm text-ink-primary hover:bg-white/10 transition"
@@ -343,12 +217,12 @@ export default function CodeProjectCard({ project, index }: CodeProjectCardProps
 
           {/* Code area */}
           <div className="p-5 lg:p-6 overflow-x-auto">
-            {index === 0 ? <SqlSnippet /> : <PythonSnippet />}
+            <CodeBlock snippet={project.code_snippet ?? ""} lang={lang} />
           </div>
 
           {/* Stats strip */}
           <div className="bg-background-elevated border-t border-white/8 px-5 py-4 grid grid-cols-3 gap-4">
-            {project.stats.map((stat) => (
+            {stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-xl font-black gradient-text">{stat.value}</div>
                 <div className="text-[9px] uppercase tracking-widest text-ink-muted mt-1">
