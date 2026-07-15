@@ -158,6 +158,7 @@ export default function Hero({ profile, siteSettings }: HeroProps) {
               width={600}
               height={800}
               priority
+              fetchPriority="high"
               className="w-full h-auto object-contain relative z-10"
             />
           </motion.div>
