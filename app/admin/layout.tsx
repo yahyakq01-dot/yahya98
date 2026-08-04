@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ToastProvider } from "@/components/admin/ui/ToastProvider";
@@ -10,17 +11,20 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  const authClient = await createClient();
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await authClient.auth.getUser();
 
   if (!user || !user.email) {
     redirect("/login");
   }
 
-  // Verify admin status
-  const { data: adminCheck } = await supabase
+  // Verify admin status with the service-role client so the check never
+  // depends on the request's JWT reaching PostgREST (which fails on the
+  // post-login redirect and around token refresh).
+  const admin = createAdminClient();
+  const { data: adminCheck } = await admin
     .from("admin_users")
     .select("email, full_name")
     .eq("email", user.email)

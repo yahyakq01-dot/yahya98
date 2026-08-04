@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -33,7 +34,12 @@ export async function GET(request: Request) {
     } = await supabase.auth.getUser();
 
     if (user?.email) {
-      const { data: adminCheck } = await supabase
+      // Check admin membership with the service-role client (bypasses RLS).
+      // The session cookie minted by exchangeCodeForSession isn't readable
+      // within this same request, so a user-scoped (RLS-gated) query here
+      // would run unauthenticated and always return nothing.
+      const admin = createAdminClient();
+      const { data: adminCheck } = await admin
         .from("admin_users")
         .select("email")
         .eq("email", user.email)

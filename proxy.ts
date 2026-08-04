@@ -1,5 +1,29 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import type { Database } from "@/lib/supabase/database.types";
+
+// Service-role client for the admin-membership check. Created inline (not via
+// lib/supabase/admin, which is `server-only`-guarded and would throw in the
+// proxy runtime). The proxy runs server-side only, so the key is never shipped
+// to the browser. Using it keeps the check independent of the request JWT,
+// which isn't reliably readable from cookies around login / token refresh.
+function adminClient() {
+  return createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
+
+async function isAdminEmail(email: string): Promise<boolean> {
+  const { data } = await adminClient()
+    .from("admin_users")
+    .select("email")
+    .eq("email", email)
+    .maybeSingle();
+  return Boolean(data);
+}
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -40,13 +64,7 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    const { data: adminCheck } = await supabase
-      .from("admin_users")
-      .select("email")
-      .eq("email", user.email)
-      .maybeSingle();
-
-    if (!adminCheck) {
+    if (!(await isAdminEmail(user.email))) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("error", "unauthorized");
@@ -55,13 +73,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (pathname === "/login" && user?.email) {
-    const { data: adminCheck } = await supabase
-      .from("admin_users")
-      .select("email")
-      .eq("email", user.email)
-      .maybeSingle();
-
-    if (adminCheck) {
+    if (await isAdminEmail(user.email)) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin";
       return NextResponse.redirect(url);
