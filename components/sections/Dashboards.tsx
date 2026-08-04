@@ -39,7 +39,7 @@ export default function Dashboards({ dashboards, capabilities }: DashboardsProps
         <div className="mt-16 mb-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {capabilities.map((capability, index) => (
             <CapabilityCard
-              key={capability.title}
+              key={capability.id}
               capability={capability}
               index={index}
             />
@@ -67,7 +67,8 @@ export default function Dashboards({ dashboards, capabilities }: DashboardsProps
             Featured Dashboards
           </h3>
           <p className="text-xs uppercase tracking-widest text-ink-muted mb-10">
-            9 projects · Tap any card to open the live preview
+            {dashboards.length} {dashboards.length === 1 ? "project" : "projects"} ·
+            Tap any card to open the live preview
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

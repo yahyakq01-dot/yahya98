@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
 
 export default function GlobalError({
@@ -38,13 +39,13 @@ export default function GlobalError({
             <RefreshCcw size={14} />
             Try Again
           </button>
-          <a
+          <Link
             href="/"
             className="inline-flex items-center gap-2 border border-white/15 rounded-full px-6 py-3 text-sm font-semibold hover:bg-white/5 transition"
           >
             <Home size={14} />
             Go Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

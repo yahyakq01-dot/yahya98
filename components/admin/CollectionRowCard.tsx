@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Image from "next/image";
-import { Trash2, GripVertical } from "lucide-react";
+import { Trash2, LayoutGrid } from "lucide-react";
 
 interface CollectionRowCardProps {
   title: string;
@@ -39,7 +39,7 @@ export function CollectionRowCard({
         </div>
       ) : (
         <div className="w-16 h-16 rounded-xl shrink-0 bg-background-base border border-white/8 flex items-center justify-center text-ink-muted">
-          <GripVertical size={18} />
+          <LayoutGrid size={18} />
         </div>
       )}
 

@@ -33,7 +33,7 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith("/admin")) {
-    if (!user) {
+    if (!user || !user.email) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("redirectTo", pathname);
@@ -43,7 +43,7 @@ export async function proxy(request: NextRequest) {
     const { data: adminCheck } = await supabase
       .from("admin_users")
       .select("email")
-      .eq("email", user.email!)
+      .eq("email", user.email)
       .maybeSingle();
 
     if (!adminCheck) {
@@ -54,11 +54,11 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (pathname === "/login" && user) {
+  if (pathname === "/login" && user?.email) {
     const { data: adminCheck } = await supabase
       .from("admin_users")
       .select("email")
-      .eq("email", user.email!)
+      .eq("email", user.email)
       .maybeSingle();
 
     if (adminCheck) {
@@ -73,6 +73,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icon|manifest.webmanifest|sitemap.xml|robots.txt|api/og|api/health|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

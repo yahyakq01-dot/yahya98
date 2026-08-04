@@ -107,6 +107,7 @@ export default function NavbarClient({ siteName }: NavbarClientProps) {
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
         activeSection={activeSection}
+        siteName={siteName}
       />
     </>
   );

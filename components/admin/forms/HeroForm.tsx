@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { SiteSettingsRow } from "@/lib/supabase/database.types";
 import { updateSiteSettings } from "@/app/admin/_actions/site-settings";
 import { useToast } from "@/components/admin/ui/ToastProvider";
@@ -13,6 +14,7 @@ interface HeroFormProps {
 
 export function HeroForm({ initial }: HeroFormProps) {
   const toast = useToast();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
 
   const [eyebrow, setEyebrow] = useState(initial?.hero_eyebrow ?? "");
@@ -32,6 +34,10 @@ export function HeroForm({ initial }: HeroFormProps) {
   };
 
   const handleSave = async () => {
+    if (!eyebrow.trim() || !line1.trim() || !line2.trim() || !line3.trim()) {
+      toast.error("Eyebrow and all three headline lines are required.");
+      return;
+    }
     setSaving(true);
     try {
       await updateSiteSettings({
@@ -43,6 +49,7 @@ export function HeroForm({ initial }: HeroFormProps) {
         hero_ticker: ticker || null,
       });
       toast.success("Hero section saved.");
+      router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save.");
     } finally {

@@ -45,7 +45,7 @@ export default function CapabilityCard({ capability, index }: CapabilityCardProp
         {Icon && <Icon size={18} className="text-brand-light" />}
       </div>
       <div>
-        <h4 className="text-sm font-bold text-ink-primary">{capability.title}</h4>
+        <h3 className="text-sm font-bold text-ink-primary">{capability.title}</h3>
         <p className="text-xs text-ink-secondary leading-relaxed mt-1">
           {capability.description}
         </p>

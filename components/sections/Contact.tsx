@@ -36,8 +36,10 @@ interface ContactProps {
 
 export default function Contact({ contactInfo }: ContactProps) {
   const email = contactInfo?.email ?? "yahyaqureshi012@gmail.com";
-  const whatsapp = contactInfo?.whatsapp ?? "+923331234567";
-  const whatsappDisplay = contactInfo?.whatsapp_display ?? "+92 333 123 4567";
+  // No placeholder fallback for WhatsApp — a fake number is worse than hiding
+  // the card, so the WhatsApp option only appears when a real number is set.
+  const whatsapp = contactInfo?.whatsapp ?? null;
+  const whatsappDisplay = contactInfo?.whatsapp_display ?? whatsapp ?? "";
   const fiverrUrl =
     contactInfo?.fiverr_url ?? "https://www.fiverr.com/yahya_qureshii";
   const fiverrDisplay = contactInfo?.fiverr_display ?? "fiverr.com/yahya_qureshii";
@@ -45,12 +47,12 @@ export default function Contact({ contactInfo }: ContactProps) {
   const location =
     contactInfo?.location ?? "Pakistan 🇵🇰 · Available Worldwide";
 
-  const whatsappDigits = whatsapp.replace(/[^0-9]/g, "");
+  const whatsappDigits = whatsapp ? whatsapp.replace(/[^0-9]/g, "") : "";
   const whatsappText =
     "Hi%20Yahya%2C%20I%20found%20your%20portfolio%20and%20would%20love%20to%20discuss%20a%20data%20project.";
   const whatsappHref = `https://wa.me/${whatsappDigits}?text=${whatsappText}`;
 
-  const CONTACT_CARDS: ContactCard[] = [
+  const ALL_CONTACT_CARDS: ContactCard[] = [
     {
       key: "whatsapp",
       icon: <MessageCircle size={22} />,
@@ -78,6 +80,11 @@ export default function Contact({ contactInfo }: ContactProps) {
       accentColor: "fiverr-green",
     },
   ];
+
+  // Hide the WhatsApp card entirely when no number is configured.
+  const CONTACT_CARDS = ALL_CONTACT_CARDS.filter(
+    (card) => card.key !== "whatsapp" || Boolean(whatsapp)
+  );
 
   const INFO_STRIPS: InfoStrip[] = [
     {

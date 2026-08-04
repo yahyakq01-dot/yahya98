@@ -5,6 +5,7 @@ import { PublicChrome } from "@/components/layout/PublicChrome";
 import PreloaderServer from "@/components/layout/PreloaderServer";
 import NavbarServer from "@/components/layout/NavbarServer";
 import FooterServer from "@/components/layout/FooterServer";
+import { SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -12,8 +13,6 @@ const inter = Inter({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -82,6 +81,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#7C3AED",
 };
 
 export default function RootLayout({

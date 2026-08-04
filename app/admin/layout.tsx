@@ -15,7 +15,7 @@ export default async function AdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (!user || !user.email) {
     redirect("/login");
   }
 
@@ -23,7 +23,7 @@ export default async function AdminLayout({
   const { data: adminCheck } = await supabase
     .from("admin_users")
     .select("email, full_name")
-    .eq("email", user.email!)
+    .eq("email", user.email)
     .maybeSingle();
 
   if (!adminCheck) {
@@ -32,7 +32,7 @@ export default async function AdminLayout({
 
   return (
     <ToastProvider>
-      <AdminShell user={{ email: user.email!, fullName: adminCheck.full_name }}>
+      <AdminShell user={{ email: user.email, fullName: adminCheck.full_name }}>
         {children}
       </AdminShell>
     </ToastProvider>

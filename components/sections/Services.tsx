@@ -32,7 +32,7 @@ export default function Services({ services }: ServicesProps) {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7">
           {services.map((service, index) => (
-            <ServiceCard key={service.number} service={service} index={index} />
+            <ServiceCard key={service.id} service={service} index={index} />
           ))}
         </div>
       </div>

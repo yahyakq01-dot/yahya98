@@ -154,7 +154,7 @@ export default function Hero({ profile, siteSettings }: HeroProps) {
             />
             <Image
               src={photoUrl}
-              alt="Yahya Khan — Financial Analyst"
+              alt={profile?.name ?? "Yahya Khan"}
               width={600}
               height={800}
               priority

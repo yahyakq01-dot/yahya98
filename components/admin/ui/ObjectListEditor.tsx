@@ -47,6 +47,7 @@ export function ObjectListEditor<T extends Record<string, string>>({
                 key={f.key}
                 value={row[f.key] ?? ""}
                 placeholder={f.placeholder}
+                aria-label={`${label} — ${f.key}`}
                 onChange={(e) => updateRow(i, f.key, e.target.value)}
                 className="flex-1 min-w-0 bg-background-base border border-white/10 rounded-lg px-3 py-2 text-sm text-ink-primary placeholder:text-ink-muted focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/30 transition"
               />

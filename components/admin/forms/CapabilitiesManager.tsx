@@ -16,6 +16,7 @@ import {
   deleteCodeCapability,
 } from "@/app/admin/_actions/code-capabilities";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 
@@ -76,7 +77,12 @@ export function CapabilitiesManager({
           description="The capability cards shown above the dashboards grid."
           addLabel="Add Capability"
           itemNoun="Capability"
-          emptyInput={{ title: "", description: "", icon: "", display_order: 0 }}
+          emptyInput={{
+            title: "",
+            description: "",
+            icon: "",
+            display_order: nextDisplayOrder(dashboardCaps),
+          }}
           toInput={(r) => ({
             title: r.title,
             description: r.description,
@@ -141,7 +147,11 @@ export function CapabilitiesManager({
           description="The capability pills shown in the SQL & Python section."
           addLabel="Add Capability"
           itemNoun="Capability"
-          emptyInput={{ title: "", icon: "", display_order: 0 }}
+          emptyInput={{
+            title: "",
+            icon: "",
+            display_order: nextDisplayOrder(codeCaps),
+          }}
           toInput={(r) => ({
             title: r.title,
             icon: r.icon,

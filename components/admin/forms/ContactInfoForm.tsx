@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ContactInfoRow } from "@/lib/supabase/database.types";
 import { updateContactInfo } from "@/app/admin/_actions/contact-info";
 import { useToast } from "@/components/admin/ui/ToastProvider";
@@ -16,6 +17,7 @@ const WHATSAPP_RE = /^\+\d{6,15}$/;
 
 export function ContactInfoForm({ initial }: ContactInfoFormProps) {
   const toast = useToast();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -66,6 +68,7 @@ export function ContactInfoForm({ initial }: ContactInfoFormProps) {
         availability: availability || null,
       });
       toast.success("Contact info saved.");
+      router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save.");
     } finally {

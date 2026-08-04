@@ -11,12 +11,12 @@ export async function requireAdmin() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user || !user.email) redirect("/login");
 
   const { data } = await supabase
     .from("admin_users")
     .select("email")
-    .eq("email", user.email!)
+    .eq("email", user.email)
     .maybeSingle();
 
   if (!data) redirect("/login?error=unauthorized");

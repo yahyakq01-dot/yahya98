@@ -3,6 +3,7 @@
 import type { StatRow } from "@/lib/supabase/database.types";
 import { createStat, updateStat, deleteStat } from "@/app/admin/_actions/stats";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 
@@ -18,7 +19,7 @@ export function StatsManager({ stats }: { stats: StatRow[] }) {
       description="Update the headline statistics shown in the About section."
       addLabel="Add Stat"
       itemNoun="Stat"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(stats) }}
       toInput={(r) => ({
         value: r.value,
         label: r.label,

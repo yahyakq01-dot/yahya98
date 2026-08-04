@@ -28,7 +28,7 @@ export default function WorkedWith({ items }: WorkedWithProps) {
       <Marquee speed={40} direction="left" fadeEdges>
         {items.map((entry) => (
           <LogoTile
-            key={entry.name}
+            key={entry.id}
             name={entry.name}
             monogram={entry.monogram}
             category={entry.category}
@@ -37,7 +37,7 @@ export default function WorkedWith({ items }: WorkedWithProps) {
       </Marquee>
 
       <p className="mt-6 text-xs text-ink-muted text-center italic">
-        8+ organizations, products, and partners in the data journey.
+        {items.length} organizations, products, and partners in the data journey.
       </p>
     </motion.section>
   );

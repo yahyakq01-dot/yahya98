@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
-export const dynamic = "force-dynamic";
+// Static OG image — no request-dependent input, so prerender it once and let
+// the CDN cache it instead of re-rendering on every social unfurl.
+export const dynamic = "force-static";
 
 export async function GET() {
   return new ImageResponse(

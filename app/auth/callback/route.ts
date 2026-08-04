@@ -4,7 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const redirectTo = requestUrl.searchParams.get("redirectTo") || "/admin";
+  const redirectToParam = requestUrl.searchParams.get("redirectTo") || "/admin";
+  // Only allow same-site relative paths — never an absolute/protocol-relative
+  // URL — so `?redirectTo=` can't be abused as an open redirect.
+  const redirectPath =
+    redirectToParam.startsWith("/") && !redirectToParam.startsWith("//")
+      ? redirectToParam
+      : "/admin";
   const origin = requestUrl.origin;
 
   if (code) {
@@ -34,7 +40,7 @@ export async function GET(request: Request) {
         .maybeSingle();
 
       if (adminCheck) {
-        return NextResponse.redirect(`${origin}${redirectTo}`);
+        return NextResponse.redirect(new URL(redirectPath, origin));
       }
 
       await supabase.auth.signOut();

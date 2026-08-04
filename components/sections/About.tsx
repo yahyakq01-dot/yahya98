@@ -53,6 +53,7 @@ export default function About({ profile, stats }: AboutProps) {
                   src={photoUrl}
                   alt={name}
                   fill
+                  sizes="128px"
                   className="object-cover"
                 />
               </div>
@@ -148,7 +149,7 @@ export default function About({ profile, stats }: AboutProps) {
             >
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 {stats.map((stat) => (
-                  <div key={stat.label} className="flex flex-col items-center text-center">
+                  <div key={stat.id} className="flex flex-col items-center text-center">
                     <span className="text-3xl md:text-4xl font-black text-ink-primary gradient-text">
                       {stat.value}
                     </span>

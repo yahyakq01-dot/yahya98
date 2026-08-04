@@ -1,3 +1,7 @@
+// `server-only` makes the build fail if this privileged (service-role)
+// client is ever imported into a Client Component — a hard guarantee that the
+// service-role key can never leak into the browser bundle.
+import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 

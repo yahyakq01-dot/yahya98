@@ -42,6 +42,18 @@ function LoginContent() {
   const redirectTo = searchParams.get("redirectTo") || "/admin";
   const [isLoading, setIsLoading] = useState(false);
 
+  const errorInfo = errorParam
+    ? errorParam === "unauthorized"
+      ? {
+          title: "Access Denied",
+          body: "Your Google account isn't authorized to access this admin. Please contact the site owner.",
+        }
+      : {
+          title: "Sign-in failed",
+          body: "Something went wrong while signing you in. Please try again.",
+        }
+    : null;
+
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     const supabase = createClient();
@@ -88,18 +100,20 @@ function LoginContent() {
           Sign in with your Google account to manage your portfolio content.
         </p>
 
-        {errorParam === "unauthorized" && (
-          <div className="mt-6 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 flex items-start gap-3">
+        {errorInfo && (
+          <div
+            role="alert"
+            className="mt-6 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 flex items-start gap-3"
+          >
             <AlertCircle
               size={16}
               className="text-red-400 mt-0.5 shrink-0"
               aria-hidden="true"
             />
             <div>
-              <p className="text-sm font-bold text-red-400">Access Denied</p>
+              <p className="text-sm font-bold text-red-400">{errorInfo.title}</p>
               <p className="text-xs text-red-300/80 leading-relaxed mt-1">
-                Your Google account isn&apos;t authorized to access this admin.
-                Please contact the site owner.
+                {errorInfo.body}
               </p>
             </div>
           </div>

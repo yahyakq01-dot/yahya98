@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { SiteSettingsRow } from "@/lib/supabase/database.types";
 import { updateSiteSettings } from "@/app/admin/_actions/site-settings";
 import { useToast } from "@/components/admin/ui/ToastProvider";
@@ -13,6 +14,7 @@ interface SiteSettingsFormProps {
 
 export function SiteSettingsForm({ initial }: SiteSettingsFormProps) {
   const toast = useToast();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
 
   const [siteName, setSiteName] = useState(initial?.site_name ?? "");
@@ -41,6 +43,7 @@ export function SiteSettingsForm({ initial }: SiteSettingsFormProps) {
         footer_bio: footerBio || null,
       });
       toast.success("Site settings saved.");
+      router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save.");
     } finally {

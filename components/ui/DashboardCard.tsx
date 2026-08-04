@@ -14,7 +14,7 @@ export default function DashboardCard({ dashboard, index }: DashboardCardProps) 
   const hasLive = Boolean(dashboard.live_preview_url);
 
   const cardClassName =
-    "group relative block rounded-3xl overflow-hidden cursor-pointer aspect-[16/10] bg-background-surface border border-white/[0.08] hover:border-brand-primary/40 transition-all duration-500";
+    "group relative block rounded-3xl overflow-hidden aspect-[16/10] bg-background-surface border border-white/[0.08] hover:border-brand-primary/40 transition-all duration-500";
 
   const cardInner = (
     <>
@@ -114,7 +114,7 @@ export default function DashboardCard({ dashboard, index }: DashboardCardProps) 
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`Open live preview of ${dashboard.title}`}
-          className={cardClassName}
+          className={`${cardClassName} cursor-pointer`}
         >
           {cardInner}
         </a>

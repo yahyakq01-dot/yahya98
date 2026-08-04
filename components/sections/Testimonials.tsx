@@ -12,6 +12,37 @@ interface TestimonialsProps {
 }
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
+  const total = testimonials.length;
+  // Keep the headline stats in sync with the actual reviews rather than
+  // hardcoding them; fall back to the static copy when there are none yet.
+  const stats =
+    total > 0
+      ? [
+          {
+            value: (
+              testimonials.reduce((s, t) => s + t.rating, 0) / total
+            ).toFixed(1),
+            label: "Avg Rating",
+          },
+          {
+            value: String(testimonials.filter((t) => t.rating === 5).length),
+            label: "5-Star Reviews",
+          },
+          {
+            value: `${Math.round(
+              (testimonials.filter((t) => t.rating >= 4).length / total) * 100
+            )}%`,
+            label: "Satisfaction",
+          },
+          {
+            value: String(
+              testimonials.filter((t) => t.is_repeat_client).length
+            ),
+            label: "Repeat Clients",
+          },
+        ]
+      : TESTIMONIAL_STATS;
+
   return (
     <section
       id="testimonials"
@@ -43,7 +74,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
           transition={{ duration: 0.6 }}
           className="mt-14 mb-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto"
         >
-          {TESTIMONIAL_STATS.map((stat) => (
+          {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col items-center text-center">
               <div className="text-3xl md:text-4xl font-black gradient-text">
                 {stat.value}

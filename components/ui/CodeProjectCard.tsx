@@ -101,10 +101,15 @@ function CodeBlock({ snippet, lang }: { snippet: string; lang: CodeLang }) {
 }
 
 export default function CodeProjectCard({ project, index }: CodeProjectCardProps) {
-  const features =
-    (project.features as unknown as { icon: string; label: string }[]) ?? [];
-  const stats =
-    (project.stats as unknown as { value: string; label: string }[]) ?? [];
+  // `features` and `stats` are stored as free-form JSON, so a malformed
+  // value (object, string, null) could otherwise reach `.map` and crash the
+  // whole page. Guard to an array before rendering.
+  const features = Array.isArray(project.features)
+    ? (project.features as { icon: string; label: string }[])
+    : [];
+  const stats = Array.isArray(project.stats)
+    ? (project.stats as { value: string; label: string }[])
+    : [];
 
   const filename =
     project.code_filename ??
