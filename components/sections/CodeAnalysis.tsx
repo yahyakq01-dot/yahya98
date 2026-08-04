@@ -68,7 +68,7 @@ export default function CodeAnalysis({ projects, capabilities }: CodeAnalysisPro
           className="mt-14 flex flex-wrap justify-center gap-3"
         >
           {capabilities.map((cap) => (
-            <motion.div key={cap.title} variants={pillItem}>
+            <motion.div key={cap.id} variants={pillItem}>
               <CapabilityPill icon={cap.icon} title={cap.title} />
             </motion.div>
           ))}

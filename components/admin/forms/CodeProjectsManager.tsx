@@ -7,6 +7,7 @@ import {
   deleteCodeProject,
 } from "@/app/admin/_actions/code-projects";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 import { TagInput } from "@/components/admin/ui/TagInput";
@@ -79,7 +80,7 @@ export function CodeProjectsManager({
       description="Curate the SQL and Python analysis projects, their code snippets, features, and stats."
       addLabel="Add Code Project"
       itemNoun="Code Project"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(projects) }}
       toInput={(r) => ({
         slug: r.slug,
         title: r.title,

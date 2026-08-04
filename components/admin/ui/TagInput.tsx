@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useId, useState, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { FormLabel } from "./FormLabel";
 
@@ -22,6 +22,7 @@ export function TagInput({
   required,
 }: TagInputProps) {
   const [draft, setDraft] = useState("");
+  const inputId = useId();
 
   const addTag = (raw: string) => {
     const tag = raw.trim();
@@ -49,7 +50,7 @@ export function TagInput({
 
   return (
     <div className="mb-5">
-      <FormLabel required={required} hint={hint}>
+      <FormLabel htmlFor={inputId} required={required} hint={hint}>
         {label}
       </FormLabel>
       <div className="flex flex-wrap gap-2 bg-background-base border border-white/10 rounded-xl px-3 py-2.5 focus-within:border-brand-primary/50 focus-within:ring-1 focus-within:ring-brand-primary/30 transition">
@@ -70,6 +71,7 @@ export function TagInput({
           </span>
         ))}
         <input
+          id={inputId}
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={handleKeyDown}

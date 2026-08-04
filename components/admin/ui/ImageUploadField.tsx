@@ -34,8 +34,30 @@ export function ImageUploadField({
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
+  const acceptList = accept
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const isTypeAccepted = (type: string) =>
+    acceptList.length === 0 ||
+    acceptList.some((a) =>
+      a.endsWith("/*") ? type.startsWith(a.slice(0, -1)) : a === type
+    );
+
   const handleFile = async (file: File) => {
     setError(null);
+
+    // Validate type here (not just via the picker's `accept`), because the
+    // drag-and-drop path bypasses `accept` entirely.
+    if (file.type && !isTypeAccepted(file.type)) {
+      setError(
+        bucket === "portfolio-documents"
+          ? "Unsupported file type. Please upload a PDF."
+          : "Unsupported file type. Please upload a PNG, JPG, or WEBP image."
+      );
+      return;
+    }
 
     if (file.size > MAX_BYTES) {
       setError("File is too large. Maximum size is 5MB.");

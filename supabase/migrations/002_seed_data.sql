@@ -1,12 +1,17 @@
 -- ============================================
 -- YAHYA KHAN PORTFOLIO — SEED DATA
+--
+-- This seed is IDEMPOTENT: every block is guarded so re-running it will not
+-- create duplicate rows (singletons use WHERE NOT EXISTS, collections seed
+-- only when their table is empty, and slug/email tables use ON CONFLICT).
 -- ============================================
 
 -- 1. PROFILE (singleton)
 INSERT INTO public.profile (
   name, role, short_bio, long_bio, photo_url, cv_url,
   available_for_work, fiverr_url, github_url
-) VALUES (
+)
+SELECT
   'Yahya Khan',
   'Financial Analyst & BI Developer',
   'I build dashboards, financial models & SQL/Python solutions — turning messy data into decisions that grow your business.',
@@ -16,14 +21,15 @@ INSERT INTO public.profile (
   true,
   'https://www.fiverr.com/yahya_qureshii',
   'https://github.com/yahya-kq'
-);
+WHERE NOT EXISTS (SELECT 1 FROM public.profile);
 
 -- 2. SITE SETTINGS (singleton)
 INSERT INTO public.site_settings (
   site_name, monogram, hero_eyebrow,
   hero_line_1, hero_line_2, hero_line_3, hero_subheadline, hero_ticker,
   footer_tagline, footer_bio
-) VALUES (
+)
+SELECT
   'Yahya.',
   'YK',
   'AVAILABLE FOR PROJECTS',
@@ -34,13 +40,14 @@ INSERT INTO public.site_settings (
   'Decoding Data Into Decisions ↗',
   'Let''s Build The Future of Data Decisions Together.',
   'Yahya Khan — Financial Analyst & BI Developer · Available Worldwide · yahyaqureshi012@gmail.com'
-);
+WHERE NOT EXISTS (SELECT 1 FROM public.site_settings);
 
 -- 3. CONTACT INFO (singleton)
 INSERT INTO public.contact_info (
   email, whatsapp, whatsapp_display, fiverr_url, fiverr_display,
   response_time, location, availability
-) VALUES (
+)
+SELECT
   'yahyaqureshi012@gmail.com',
   '+923331234567',
   '+92 333 123 4567',
@@ -49,17 +56,23 @@ INSERT INTO public.contact_info (
   'Within 24 hours',
   'Pakistan 🇵🇰 · Available Worldwide',
   'Open to remote engagements'
-);
+WHERE NOT EXISTS (SELECT 1 FROM public.contact_info);
 
 -- 4. STATS
-INSERT INTO public.stats (value, label, display_order) VALUES
+INSERT INTO public.stats (value, label, display_order)
+SELECT v.value, v.label, v.display_order
+FROM (VALUES
   ('11+', 'Projects', 1),
-  ('9', 'BI Dashboards', 2),
+  ('10', 'BI Dashboards', 2),
   ('5.0', 'Rating', 3),
-  ('1+', 'Year Experience', 4);
+  ('1+', 'Year Experience', 4)
+) AS v(value, label, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.stats);
 
 -- 5. SERVICES (5 entries)
-INSERT INTO public.services (number, title, description, tools, icon, highlight, display_order) VALUES
+INSERT INTO public.services (number, title, description, tools, icon, highlight, display_order)
+SELECT v.number, v.title, v.description, v.tools, v.icon, v.highlight, v.display_order
+FROM (VALUES
   ('01', 'Power BI Dashboards',
    'Interactive dashboards that turn fragmented data into one clear story. Custom KPIs, drill-downs, real-time refresh, and stakeholder-ready visuals built for executives, not engineers.',
    ARRAY['Power BI', 'DAX', 'Power Query', 'M Language']::TEXT[],
@@ -79,7 +92,9 @@ INSERT INTO public.services (number, title, description, tools, icon, highlight,
   ('05', 'Python Data Cleaning',
    'Messy data, gone. Cleaning, transformation, retention analysis, and exploratory work — Pandas-powered scripts that make your dataset analysis-ready and consistent.',
    ARRAY['Python', 'Pandas', 'Matplotlib', 'Data Cleaning']::TEXT[],
-   'Code2', false, 5);
+   'Code2', false, 5)
+) AS v(number, title, description, tools, icon, highlight, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.services);
 
 -- 6. DASHBOARDS (10 entries — all real Power BI projects)
 INSERT INTO public.dashboards (slug, title, category, image_url, description, tools, live_preview_url, highlight, display_order) VALUES
@@ -193,13 +208,17 @@ INSERT INTO public.dashboards (slug, title, category, image_url, description, to
 ON CONFLICT (slug) DO NOTHING;
 
 -- 7. DASHBOARD CAPABILITIES
-INSERT INTO public.dashboard_capabilities (title, description, icon, display_order) VALUES
+INSERT INTO public.dashboard_capabilities (title, description, icon, display_order)
+SELECT v.title, v.description, v.icon, v.display_order
+FROM (VALUES
   ('KPI Dashboards', 'Executive-ready visuals with custom KPIs and drill-down filters.', 'Gauge', 1),
   ('Financial Reports', 'Income statements, variance analysis, and P&L breakdowns.', 'DollarSign', 2),
   ('Real-Time APIs', 'Live data refresh via API integrations for current-state monitoring.', 'Zap', 3),
   ('Multi-Source ETL', 'Consolidating fragmented data sources into one user-friendly view.', 'GitMerge', 4),
   ('Geo Analytics', 'State, regional, and country-level demand mapping on a globe.', 'Globe', 5),
-  ('Trend Analysis', 'MoM, QoQ, YoY comparisons with conditional formatting and auto-flags.', 'TrendingUp', 6);
+  ('Trend Analysis', 'MoM, QoQ, YoY comparisons with conditional formatting and auto-flags.', 'TrendingUp', 6)
+) AS v(title, description, icon, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.dashboard_capabilities);
 
 -- 8. CODE PROJECTS
 INSERT INTO public.code_projects (
@@ -257,7 +276,9 @@ INSERT INTO public.code_projects (
 ) ON CONFLICT (slug) DO NOTHING;
 
 -- 9. CODE CAPABILITIES
-INSERT INTO public.code_capabilities (title, icon, display_order) VALUES
+INSERT INTO public.code_capabilities (title, icon, display_order)
+SELECT v.title, v.icon, v.display_order
+FROM (VALUES
   ('Complex SQL Queries', 'Database', 1),
   ('Customer Segmentation', 'Users', 2),
   ('Cohort Analysis', 'Layers', 3),
@@ -265,10 +286,14 @@ INSERT INTO public.code_capabilities (title, icon, display_order) VALUES
   ('Statistical Analysis', 'Sigma', 5),
   ('Performance Comparisons', 'GitCompare', 6),
   ('Window Functions', 'ChartLine', 7),
-  ('Matplotlib Visualizations', 'BarChart3', 8);
+  ('Matplotlib Visualizations', 'BarChart3', 8)
+) AS v(title, icon, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.code_capabilities);
 
 -- 10. TESTIMONIALS
-INSERT INTO public.testimonials (name, initials, country, flag, source, rating, quote, service, is_repeat_client, display_order) VALUES
+INSERT INTO public.testimonials (name, initials, country, flag, source, rating, quote, service, is_repeat_client, display_order)
+SELECT v.name, v.initials, v.country, v.flag, v.source, v.rating, v.quote, v.service, v.is_repeat_client, v.display_order
+FROM (VALUES
   ('rondo75', 'R', 'United States', '🇺🇸', 'Fiverr', 5,
    'First time working together and very impressed with the work! He is fluent in English and had deep understanding of the task. The work was delivered fast and he was professional. I will definitely be a repeat customer!',
    'Power BI Dashboard', false, 1),
@@ -280,10 +305,14 @@ INSERT INTO public.testimonials (name, initials, country, flag, source, rating, 
    'Excel Analysis', false, 3),
   ('wakes89', 'W', 'United States', '🇺🇸', 'Fiverr', 5,
    'Great great job',
-   'Data Cleanup', false, 4);
+   'Data Cleanup', false, 4)
+) AS v(name, initials, country, flag, source, rating, quote, service, is_repeat_client, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.testimonials);
 
 -- 11. WORKED WITH
-INSERT INTO public.worked_with (name, monogram, category, display_order) VALUES
+INSERT INTO public.worked_with (name, monogram, category, display_order)
+SELECT v.name, v.monogram, v.category, v.display_order
+FROM (VALUES
   ('iGATE Technologies', 'iG', 'Employer', 1),
   ('SoftTech-IT Institute', 'ST', 'Employer', 2),
   ('CUST University', 'CU', 'Education', 3),
@@ -291,14 +320,25 @@ INSERT INTO public.worked_with (name, monogram, category, display_order) VALUES
   ('Fiverr', 'Fi', 'Marketplace', 5),
   ('Power BI', 'PBI', 'Tool', 6),
   ('Microsoft SQL Server', 'MS', 'Tool', 7),
-  ('Tableau', 'Tb', 'Tool', 8);
+  ('Tableau', 'Tb', 'Tool', 8)
+) AS v(name, monogram, category, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.worked_with);
 
 -- 12. SOCIAL LINKS
-INSERT INTO public.social_links (label, href, username, icon, display_order) VALUES
+INSERT INTO public.social_links (label, href, username, icon, display_order)
+SELECT v.label, v.href, v.username, v.icon, v.display_order
+FROM (VALUES
   ('LinkedIn', 'https://www.linkedin.com/in/yahya-khan', '/in/yahya-khan', 'Linkedin', 1),
   ('GitHub', 'https://github.com/yahya-kq', '@yahya-kq', 'Github', 2),
   ('Fiverr', 'https://www.fiverr.com/yahya_qureshii', '/yahya_qureshii', 'fiverr', 3),
-  ('Instagram', 'https://instagram.com/yahyaqureshi', '@yahyaqureshi', 'Instagram', 4);
+  ('Instagram', 'https://instagram.com/yahyaqureshi', '@yahyaqureshi', 'Instagram', 4)
+) AS v(label, href, username, icon, display_order)
+WHERE NOT EXISTS (SELECT 1 FROM public.social_links);
+
+-- 13. ADMIN USERS  ← REQUIRED: without at least one row, nobody can log in to /admin.
+INSERT INTO public.admin_users (email, full_name)
+VALUES ('yahyaqureshi012@gmail.com', 'Yahya Khan')
+ON CONFLICT (email) DO NOTHING;
 
 -- ============================================
 -- END OF SEED DATA

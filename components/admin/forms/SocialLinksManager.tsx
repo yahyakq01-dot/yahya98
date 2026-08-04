@@ -7,6 +7,7 @@ import {
   deleteSocialLink,
 } from "@/app/admin/_actions/social-links";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 
@@ -28,7 +29,7 @@ export function SocialLinksManager({ links }: { links: SocialLinkRow[] }) {
       description="Add and reorder the social media links shown in the footer."
       addLabel="Add Link"
       itemNoun="Link"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(links) }}
       toInput={(r) => ({
         label: r.label,
         href: r.href,

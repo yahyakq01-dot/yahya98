@@ -7,6 +7,7 @@ import {
   deleteService,
 } from "@/app/admin/_actions/services";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 import { TagInput } from "@/components/admin/ui/TagInput";
@@ -32,7 +33,7 @@ export function ServicesManager({ services }: { services: ServiceRow[] }) {
       description="Edit the services you offer, their descriptions, tools, and display order."
       addLabel="Add Service"
       itemNoun="Service"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(services) }}
       toInput={(r) => ({
         number: r.number,
         title: r.title,

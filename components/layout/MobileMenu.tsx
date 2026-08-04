@@ -9,13 +9,18 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   activeSection: string;
+  siteName: string;
 }
 
 export default function MobileMenu({
   isOpen,
   onClose,
   activeSection,
+  siteName,
 }: MobileMenuProps) {
+  const nameHasPeriod = siteName.endsWith(".");
+  const nameBase = nameHasPeriod ? siteName.slice(0, -1) : siteName;
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -50,7 +55,8 @@ export default function MobileMenu({
               onClick={onClose}
               className="text-xl font-bold tracking-tight text-ink-primary"
             >
-              Yahya<span className="text-brand-primary">.</span>
+              {nameBase}
+              {nameHasPeriod && <span className="text-brand-primary">.</span>}
             </a>
             <button
               type="button"

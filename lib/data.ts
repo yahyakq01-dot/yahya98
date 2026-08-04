@@ -4,20 +4,10 @@
 // Editable CONTENT (services, dashboards, testimonials, profile,
 // contact info, etc.) now lives in Supabase and is fetched via
 // `lib/supabase/queries.ts`. The values kept here are either
-// structural (NAV_LINKS), presentation-only display config
-// (DATA_STACK, CODE_STACK, TESTIMONIAL_STATS), or fallback
-// constants (SITE). Interfaces are retained for typing.
+// structural (NAV_LINKS) and presentation-only display config
+// (DATA_STACK, CODE_STACK, TESTIMONIAL_STATS). Interfaces are
+// retained for typing.
 // ─────────────────────────────────────────────────────────────
-
-export interface Site {
-  name: string;
-  title: string;
-  description: string;
-  email: string;
-  whatsapp: string;
-  location: string;
-  monogram: string;
-}
 
 export interface NavLink {
   id: string;
@@ -118,18 +108,6 @@ export interface SocialLink {
   username: string;
   icon: string;
 }
-
-// ── Fallback site constants (used for metadata + defaults) ──
-export const SITE: Site = {
-  name: "Yahya.",
-  title: "Yahya Khan — Financial Analyst & BI Developer",
-  description:
-    "Portfolio of Yahya Khan — Financial Analyst & BI Developer specializing in Power BI dashboards, SQL, and Python-driven analytics.",
-  email: "yahyaqureshi012@gmail.com",
-  whatsapp: "+92XXXXXXXXXX",
-  location: "Pakistan",
-  monogram: "YK",
-};
 
 // ── Structural navigation (not editable content) ──
 export const NAV_LINKS = [

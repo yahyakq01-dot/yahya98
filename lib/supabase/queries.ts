@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type {
   ProfileRow,
   SiteSettingsRow,
@@ -18,10 +18,11 @@ import type {
 
 export async function getProfile(): Promise<ProfileRow | null> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("profile")
       .select("*")
+      .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
     if (error) {
@@ -37,10 +38,11 @@ export async function getProfile(): Promise<ProfileRow | null> {
 
 export async function getSiteSettings(): Promise<SiteSettingsRow | null> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("site_settings")
       .select("*")
+      .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
     if (error) {
@@ -56,10 +58,11 @@ export async function getSiteSettings(): Promise<SiteSettingsRow | null> {
 
 export async function getContactInfo(): Promise<ContactInfoRow | null> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("contact_info")
       .select("*")
+      .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
     if (error) {
@@ -77,7 +80,7 @@ export async function getContactInfo(): Promise<ContactInfoRow | null> {
 
 export async function getStats(): Promise<StatRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("stats")
       .select("*")
@@ -95,7 +98,7 @@ export async function getStats(): Promise<StatRow[]> {
 
 export async function getServices(): Promise<ServiceRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("services")
       .select("*")
@@ -113,7 +116,7 @@ export async function getServices(): Promise<ServiceRow[]> {
 
 export async function getDashboards(): Promise<DashboardRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("dashboards")
       .select("*")
@@ -133,7 +136,7 @@ export async function getDashboardCapabilities(): Promise<
   DashboardCapabilityRow[]
 > {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("dashboard_capabilities")
       .select("*")
@@ -151,7 +154,7 @@ export async function getDashboardCapabilities(): Promise<
 
 export async function getCodeProjects(): Promise<CodeProjectRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("code_projects")
       .select("*")
@@ -169,7 +172,7 @@ export async function getCodeProjects(): Promise<CodeProjectRow[]> {
 
 export async function getCodeCapabilities(): Promise<CodeCapabilityRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("code_capabilities")
       .select("*")
@@ -187,7 +190,7 @@ export async function getCodeCapabilities(): Promise<CodeCapabilityRow[]> {
 
 export async function getTestimonials(): Promise<TestimonialRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("testimonials")
       .select("*")
@@ -205,7 +208,7 @@ export async function getTestimonials(): Promise<TestimonialRow[]> {
 
 export async function getWorkedWith(): Promise<WorkedWithRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("worked_with")
       .select("*")
@@ -223,7 +226,7 @@ export async function getWorkedWith(): Promise<WorkedWithRow[]> {
 
 export async function getSocialLinks(): Promise<SocialLinkRow[]> {
   try {
-    const supabase = await createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("social_links")
       .select("*")

@@ -1,13 +1,13 @@
 import type { MetadataRoute } from "next";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+import { SITE_URL } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
-        allow: "/",
+        // Allow the OG image (under /api) so social/image crawlers can fetch it.
+        allow: ["/", "/api/og"],
         disallow: ["/admin/", "/login", "/auth/", "/api/"],
       },
     ],

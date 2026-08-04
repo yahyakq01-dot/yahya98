@@ -37,18 +37,22 @@ function SocialIcon({ icon, className }: { icon: string; className?: string }) {
 }
 
 interface FooterClientProps {
+  siteName: string;
   footerTagline: string;
   footerBio: string;
   monogram: string;
+  email: string;
   fiverrUrl: string;
-  whatsapp: string;
+  whatsapp: string | null;
   socialLinks: SocialLinkRow[];
 }
 
 export default function FooterClient({
+  siteName,
   footerTagline,
   footerBio,
   monogram,
+  email: contactEmail,
   fiverrUrl,
   whatsapp,
   socialLinks,
@@ -56,14 +60,24 @@ export default function FooterClient({
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
+  const nameHasPeriod = siteName.endsWith(".");
+  const nameBase = nameHasPeriod ? siteName.slice(0, -1) : siteName;
+
   function handleSubscribe() {
-    if (!email) return;
-    console.log("Newsletter signup:", email);
+    const trimmed = email.trim();
+    // There is no newsletter backend, so — consistent with the contact form —
+    // this hands off to the visitor's mail client to email the owner directly.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return;
+    const subject = encodeURIComponent("Newsletter signup");
+    const body = encodeURIComponent(
+      `Please add me to your updates list: ${trimmed}`
+    );
+    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
     setSubscribed(true);
     setEmail("");
   }
 
-  const waUrl = `https://wa.me/${whatsapp.replace(/\D/g, "")}`;
+  const waUrl = whatsapp ? `https://wa.me/${whatsapp.replace(/\D/g, "")}` : null;
 
   return (
     <footer className="relative pt-24 pb-8 px-6 md:px-8 border-t border-white/[0.08] bg-background-base overflow-hidden">
@@ -83,7 +97,8 @@ export default function FooterClient({
               </div>
               <div>
                 <p className="text-xl font-bold text-ink-primary">
-                  Yahya<span className="text-brand-primary">.</span>
+                  {nameBase}
+                  {nameHasPeriod && <span className="text-brand-primary">.</span>}
                 </p>
                 <p className="text-xs uppercase tracking-[0.2em] text-ink-muted">
                   Financial Analyst · BI Developer
@@ -93,16 +108,20 @@ export default function FooterClient({
 
             {/* Big tagline */}
             <h3 className="text-3xl md:text-4xl font-black text-ink-primary leading-tight tracking-tight">
-              {footerTagline.split("Future of Data Decisions").map((part, i) =>
-                i === 0 ? (
-                  <span key={i}>
-                    {part}
-                    <span className="gradient-text">Future of Data Decisions</span>
-                  </span>
-                ) : (
-                  <span key={i}>{part}</span>
-                )
-              )}
+              {footerTagline.includes("Future of Data Decisions")
+                ? footerTagline
+                    .split("Future of Data Decisions")
+                    .map((part, i, arr) => (
+                      <span key={i}>
+                        {part}
+                        {i < arr.length - 1 && (
+                          <span className="gradient-text">
+                            Future of Data Decisions
+                          </span>
+                        )}
+                      </span>
+                    ))
+                : footerTagline}
             </h3>
 
             {/* Bio */}
@@ -126,7 +145,9 @@ export default function FooterClient({
                   className="flex-1 bg-background-base border border-white/10 rounded-xl px-4 py-2.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-brand-primary/50 focus:outline-none"
                 />
                 <button
+                  type="button"
                   onClick={handleSubscribe}
+                  aria-label="Subscribe to updates"
                   className="bg-brand-primary hover:bg-violet-500 text-white rounded-xl px-5 py-2.5 text-sm font-semibold transition flex items-center justify-center"
                 >
                   <ArrowRight size={14} />
@@ -134,7 +155,7 @@ export default function FooterClient({
               </div>
               {subscribed && (
                 <p className="mt-2 text-xs text-[color:var(--success)]">
-                  Thanks! I&apos;ll be in touch.
+                  Opening your email app…
                 </p>
               )}
             </div>
@@ -203,16 +224,18 @@ export default function FooterClient({
                     Hire on Fiverr
                   </a>
                 </li>
-                <li>
-                  <a
-                    href={waUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium text-ink-secondary hover:text-ink-primary transition-colors"
-                  >
-                    WhatsApp
-                  </a>
-                </li>
+                {waUrl && (
+                  <li>
+                    <a
+                      href={waUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-ink-secondary hover:text-ink-primary transition-colors"
+                    >
+                      WhatsApp
+                    </a>
+                  </li>
+                )}
               </ul>
             </div>
 
@@ -223,7 +246,7 @@ export default function FooterClient({
               </p>
               <ul className="flex flex-col gap-4">
                 {socialLinks.map((social) => (
-                  <li key={social.label}>
+                  <li key={social.id}>
                     <a
                       href={social.href}
                       target="_blank"
@@ -255,13 +278,10 @@ export default function FooterClient({
           <p className="text-xs text-ink-muted">© 2026 Yahya Khan. All Rights Reserved.</p>
 
           <div className="flex items-center gap-5 flex-wrap">
-            <a href="#" className="text-xs text-ink-muted hover:text-ink-secondary transition-colors">
-              Privacy
-            </a>
-            <a href="#" className="text-xs text-ink-muted hover:text-ink-secondary transition-colors">
-              Terms
-            </a>
-            <a href="#" className="text-xs text-ink-muted hover:text-ink-secondary transition-colors">
+            <a
+              href="/sitemap.xml"
+              className="text-xs text-ink-muted hover:text-ink-secondary transition-colors"
+            >
               Sitemap
             </a>
             <span className="text-xs text-ink-muted flex items-center gap-1">

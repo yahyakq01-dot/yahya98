@@ -7,6 +7,7 @@ import {
   deleteDashboard,
 } from "@/app/admin/_actions/dashboards";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 import { TagInput } from "@/components/admin/ui/TagInput";
@@ -37,7 +38,7 @@ export function DashboardsManager({ dashboards }: { dashboards: DashboardRow[] }
       description="Add, edit, reorder, and remove the Power BI dashboard projects showcased on your portfolio."
       addLabel="Add Dashboard"
       itemNoun="Dashboard"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(dashboards) }}
       toInput={(r) => ({
         slug: r.slug,
         title: r.title,
@@ -67,6 +68,7 @@ export function DashboardsManager({ dashboards }: { dashboards: DashboardRow[] }
           e.slug = "Lowercase letters, numbers and dashes only.";
         if (!i.title.trim()) e.title = "Title is required.";
         if (!i.category.trim()) e.category = "Category is required.";
+        if (!i.description.trim()) e.description = "Description is required.";
         if (!i.image_url.trim()) e.image_url = "An image is required.";
         return e;
       }}
@@ -113,6 +115,8 @@ export function DashboardsManager({ dashboards }: { dashboards: DashboardRow[] }
             onChange={(v) => patch({ description: v })}
             multiline
             rows={4}
+            required
+            error={errors.description}
           />
           <TagInput
             label="Tools"

@@ -7,6 +7,7 @@ import {
   deleteWorkedWith,
 } from "@/app/admin/_actions/worked-with";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 
@@ -22,7 +23,7 @@ export function WorkedWithManager({ items }: { items: WorkedWithRow[] }) {
       description="Maintain the list of organizations, clients, and tools shown in the marquee."
       addLabel="Add Entry"
       itemNoun="Entry"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(items) }}
       toInput={(r) => ({
         name: r.name,
         monogram: r.monogram,

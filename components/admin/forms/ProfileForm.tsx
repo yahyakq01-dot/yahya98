@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ProfileRow } from "@/lib/supabase/database.types";
 import { updateProfile } from "@/app/admin/_actions/profile";
 import { useToast } from "@/components/admin/ui/ToastProvider";
@@ -15,6 +16,7 @@ interface ProfileFormProps {
 
 export function ProfileForm({ initial }: ProfileFormProps) {
   const toast = useToast();
+  const router = useRouter();
   const [saving, setSaving] = useState(false);
 
   const [name, setName] = useState(initial?.name ?? "");
@@ -60,6 +62,7 @@ export function ProfileForm({ initial }: ProfileFormProps) {
         github_url: githubUrl || null,
       });
       toast.success("Profile saved.");
+      router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to save.");
     } finally {

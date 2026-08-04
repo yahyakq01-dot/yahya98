@@ -11,10 +11,16 @@ export function LogoutButton() {
 
   const handleLogout = async () => {
     setIsLoading(true);
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/login");
-    router.refresh();
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push("/login");
+      router.refresh();
+    } catch (err) {
+      // Network hiccup, etc. — don't leave the button stuck spinning.
+      console.error("[logout] sign-out failed:", err);
+      setIsLoading(false);
+    }
   };
 
   return (

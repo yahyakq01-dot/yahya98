@@ -7,6 +7,7 @@ import {
   deleteTestimonial,
 } from "@/app/admin/_actions/testimonials";
 import { CollectionManager } from "@/components/admin/CollectionManager";
+import { nextDisplayOrder } from "@/lib/nextDisplayOrder";
 import { Pill } from "@/components/admin/ui/Pill";
 import { TextField } from "@/components/admin/ui/TextField";
 import { SelectField } from "@/components/admin/ui/SelectField";
@@ -39,7 +40,7 @@ export function TestimonialsManager({
       description="Add and update client reviews, ratings, and repeat-client badges."
       addLabel="Add Testimonial"
       itemNoun="Testimonial"
-      emptyInput={empty}
+      emptyInput={{ ...empty, display_order: nextDisplayOrder(testimonials) }}
       toInput={(r) => ({
         name: r.name,
         initials: r.initials,
@@ -68,8 +69,12 @@ export function TestimonialsManager({
         const e: Record<string, string> = {};
         if (!i.name.trim()) e.name = "Name is required.";
         if (!i.initials.trim()) e.initials = "Initials are required.";
+        if (!i.country.trim()) e.country = "Country is required.";
+        if (!i.flag.trim()) e.flag = "Flag is required.";
         if (!i.quote.trim()) e.quote = "Quote is required.";
-        if (i.rating < 1 || i.rating > 5) e.rating = "Rating must be 1–5.";
+        if (!i.service.trim()) e.service = "Service is required.";
+        if (!Number.isInteger(i.rating) || i.rating < 1 || i.rating > 5)
+          e.rating = "Rating must be a whole number from 1 to 5.";
         return e;
       }}
       create={createTestimonial}
@@ -96,12 +101,16 @@ export function TestimonialsManager({
             label="Country"
             value={i.country}
             onChange={(v) => patch({ country: v })}
+            required
+            error={errors.country}
             placeholder="United States"
           />
           <TextField
             label="Flag"
             value={i.flag}
             onChange={(v) => patch({ flag: v })}
+            required
+            error={errors.flag}
             hint="emoji flag"
             placeholder="🇺🇸"
           />
@@ -116,13 +125,17 @@ export function TestimonialsManager({
               { value: "Web Client", label: "Web Client" },
             ]}
           />
-          <TextField
+          <SelectField
             label="Rating"
-            type="number"
             value={String(i.rating)}
-            onChange={(v) => patch({ rating: Number(v) || 0 })}
-            error={errors.rating}
-            hint="1 to 5"
+            onChange={(v) => patch({ rating: Number(v) })}
+            options={[
+              { value: "5", label: "5 ★★★★★" },
+              { value: "4", label: "4 ★★★★" },
+              { value: "3", label: "3 ★★★" },
+              { value: "2", label: "2 ★★" },
+              { value: "1", label: "1 ★" },
+            ]}
           />
           <TextField
             label="Quote"
@@ -137,6 +150,8 @@ export function TestimonialsManager({
             label="Service"
             value={i.service}
             onChange={(v) => patch({ service: v })}
+            required
+            error={errors.service}
             placeholder="Power BI Dashboard"
           />
           <SwitchField

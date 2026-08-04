@@ -10,7 +10,9 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+SET search_path = ''
+AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
@@ -272,6 +274,12 @@ CREATE TRIGGER set_social_links_updated_at
 
 -- ============================================
 -- 13. ADMIN USERS (whitelist for who can edit)
+--
+-- IMPORTANT: at least one row MUST exist here or NOBODY can access /admin
+-- (is_admin() returns false for everyone). The seed (002) inserts the owner.
+-- To add/change an admin later, use the Supabase SQL editor (service role):
+--   INSERT INTO public.admin_users (email, full_name)
+--   VALUES ('someone@example.com', 'Their Name') ON CONFLICT (email) DO NOTHING;
 -- ============================================
 
 CREATE TABLE public.admin_users (
@@ -322,8 +330,13 @@ CREATE POLICY "Public read social_links" ON public.social_links FOR SELECT USING
 -- ============================================
 
 -- Helper function to check if current authenticated user is an admin
+-- SECURITY DEFINER + pinned empty search_path: prevents search_path-hijack
+-- attacks (Supabase linter: function_search_path_mutable). All object
+-- references below are fully schema-qualified so this still resolves.
 CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS BOOLEAN AS $$
+RETURNS BOOLEAN
+SET search_path = ''
+AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.admin_users
@@ -370,7 +383,8 @@ WITH CHECK (bucket_id = 'portfolio-images' AND public.is_admin());
 
 CREATE POLICY "Admin update portfolio-images"
 ON storage.objects FOR UPDATE
-USING (bucket_id = 'portfolio-images' AND public.is_admin());
+USING (bucket_id = 'portfolio-images' AND public.is_admin())
+WITH CHECK (bucket_id = 'portfolio-images' AND public.is_admin());
 
 CREATE POLICY "Admin delete portfolio-images"
 ON storage.objects FOR DELETE
@@ -391,7 +405,8 @@ WITH CHECK (bucket_id = 'portfolio-documents' AND public.is_admin());
 
 CREATE POLICY "Admin update portfolio-documents"
 ON storage.objects FOR UPDATE
-USING (bucket_id = 'portfolio-documents' AND public.is_admin());
+USING (bucket_id = 'portfolio-documents' AND public.is_admin())
+WITH CHECK (bucket_id = 'portfolio-documents' AND public.is_admin());
 
 CREATE POLICY "Admin delete portfolio-documents"
 ON storage.objects FOR DELETE
