@@ -13,7 +13,7 @@ Keep this page handy (you can print it: **Ctrl/Cmd + P**).
 | | Web address | Who sees it |
 |---|---|---|
 | **Public portfolio** | `your-site.com` | Everyone — clients, recruiters, Fiverr buyers |
-| **Admin panel** (private) | `your-site.com/admin` | Only you, after signing in with Google |
+| **Admin panel** (private) | `your-site.com/admin` | Only you, after entering your password |
 
 Anything you change in the admin appears on the public site **within about a
 minute** (usually sooner).
@@ -23,13 +23,11 @@ minute** (usually sooner).
 ## 🔑 Signing in
 
 1. Go to **`your-site.com/login`** (bookmark this!).
-2. Click **“Continue with Google.”**
-3. Choose your Google account (`yahyaqureshi012@gmail.com`).
-4. You land on your admin dashboard. Done.
+2. Type your **admin password** and click **Sign in**.
+3. You land on your admin dashboard. Done.
 
-> **Only your email can get in.** If anyone else tries to sign in with a
-> different Google account, they’re politely turned away. If *you* ever see
-> “Access Denied,” see **Troubleshooting** at the bottom.
+> Keep this password private — anyone who has it can edit your site. You (or your
+> developer) can change it anytime; see **Troubleshooting** if it ever stops working.
 
 To sign out, click **“Sign out”** in the sidebar.
 
@@ -143,11 +141,10 @@ The site shipped with a few stand-in values. Update them once and you’re set:
 
 ## 🆘 Troubleshooting
 
-**“Access Denied” when I try to log in**
-Your Google account’s email must be on the site’s allow-list. The site is set up
-for `yahyaqureshi012@gmail.com`. If you use a different Google account, or the
-allow-list is empty, ask your developer to run the one-line database step in the
-`README.md` (“Bootstrapping the first admin”).
+**“Incorrect password” when I try to log in**
+Double-check the password (it’s case-sensitive). If you’ve forgotten it or it
+stopped working, your developer can set a new one by updating the `ADMIN_PASSWORD`
+value in Vercel and redeploying — it only takes a minute.
 
 **I saved a change but don’t see it on the public site**
 Give it up to a minute, then refresh. To see it instantly, press **“Force
@@ -170,7 +167,7 @@ break the site — the worst case is an edit you can simply change back.
 
 ## 🔒 A note on safety
 
-- Only you (your Google account) can reach the admin.
+- Only someone with your admin password can reach the admin.
 - Deleting always asks for confirmation.
 - Every change is just data — you can always edit it back. There’s no way to
   “break” the website from these forms.
