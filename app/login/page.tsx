@@ -1,75 +1,18 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-
-function GoogleLogo({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="18"
-      height="18"
-      viewBox="0 0 18 18"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <path
-        fill="#4285F4"
-        d="M17.64 9.205c0-.639-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615Z"
-      />
-      <path
-        fill="#34A853"
-        d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"
-      />
-      <path
-        fill="#EA4335"
-        d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58Z"
-      />
-    </svg>
-  );
-}
+import { AlertCircle, ArrowLeft, Loader2, Lock } from "lucide-react";
+import { login, type LoginState } from "./actions";
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const errorParam = searchParams.get("error");
   const redirectTo = searchParams.get("redirectTo") || "/admin";
-  const [isLoading, setIsLoading] = useState(false);
-
-  const errorInfo = errorParam
-    ? errorParam === "unauthorized"
-      ? {
-          title: "Access Denied",
-          body: "Your Google account isn't authorized to access this admin. Please contact the site owner.",
-        }
-      : {
-          title: "Sign-in failed",
-          body: "Something went wrong while signing you in. Please try again.",
-        }
-    : null;
-
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    const supabase = createClient();
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
-      },
-    });
-
-    if (error) {
-      console.error("OAuth error:", error);
-      setIsLoading(false);
-    }
-  };
+  const [state, formAction, pending] = useActionState<LoginState, FormData>(
+    login,
+    {}
+  );
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-background-base px-6 relative overflow-hidden">
@@ -97,10 +40,10 @@ function LoginContent() {
         </h1>
 
         <p className="mt-3 text-center text-sm text-ink-secondary leading-relaxed">
-          Sign in with your Google account to manage your portfolio content.
+          Enter your admin password to manage your portfolio content.
         </p>
 
-        {errorInfo && (
+        {state?.error && (
           <div
             role="alert"
             className="mt-6 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3 flex items-start gap-3"
@@ -110,45 +53,53 @@ function LoginContent() {
               className="text-red-400 mt-0.5 shrink-0"
               aria-hidden="true"
             />
-            <div>
-              <p className="text-sm font-bold text-red-400">{errorInfo.title}</p>
-              <p className="text-xs text-red-300/80 leading-relaxed mt-1">
-                {errorInfo.body}
-              </p>
-            </div>
+            <p className="text-sm font-medium text-red-400">{state.error}</p>
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
-          className={`mt-8 w-full bg-white text-background-base rounded-xl px-6 py-3.5 font-semibold text-sm flex items-center justify-center gap-3 hover:bg-ink-secondary transition-all duration-300 shadow-lg ${
-            isLoading ? "opacity-60 cursor-not-allowed" : ""
-          }`}
-        >
-          {isLoading ? (
-            <>
-              <Loader2 size={18} className="animate-spin" aria-hidden="true" />
-              <span>Redirecting...</span>
-            </>
-          ) : (
-            <>
-              <GoogleLogo />
-              <span>Continue with Google</span>
-            </>
-          )}
-        </button>
+        <form action={formAction} className="mt-8">
+          <input type="hidden" name="redirectTo" value={redirectTo} />
 
-        <div className="mt-8 my-2 flex items-center gap-4">
-          <span className="flex-1 h-px bg-white/8" />
-          <span className="text-[10px] uppercase tracking-widest font-bold text-ink-muted">
-            Or
-          </span>
-          <span className="flex-1 h-px bg-white/8" />
-        </div>
+          <label htmlFor="password" className="sr-only">
+            Admin password
+          </label>
+          <div className="relative">
+            <Lock
+              size={16}
+              aria-hidden="true"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-muted"
+            />
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autoFocus
+              autoComplete="current-password"
+              placeholder="Password"
+              className="w-full bg-background-base border border-white/10 rounded-xl pl-11 pr-4 py-3.5 text-sm text-ink-primary placeholder:text-ink-muted focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/30 transition"
+            />
+          </div>
 
-        <div className="mt-6 text-center">
+          <button
+            type="submit"
+            disabled={pending}
+            className={`mt-4 w-full bg-brand-primary text-white rounded-xl px-6 py-3.5 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-violet-500 transition-all duration-300 shadow-lg ${
+              pending ? "opacity-60 cursor-not-allowed" : ""
+            }`}
+          >
+            {pending ? (
+              <>
+                <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+                <span>Signing in…</span>
+              </>
+            ) : (
+              <span>Sign in</span>
+            )}
+          </button>
+        </form>
+
+        <div className="mt-8 text-center">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink-secondary transition-colors"
@@ -159,7 +110,7 @@ function LoginContent() {
         </div>
 
         <p className="mt-10 text-center text-[10px] uppercase tracking-widest text-ink-muted/70">
-          🔒 Secured by Google OAuth · Admin access only
+          🔒 Private admin · Authorized access only
         </p>
       </div>
     </main>

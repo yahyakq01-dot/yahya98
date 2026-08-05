@@ -3,7 +3,6 @@
 import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import Image from "next/image";
 import { Upload, Loader2, X, AlertCircle, FileText } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
 import { FormLabel } from "./FormLabel";
 
 interface ImageUploadFieldProps {
@@ -48,8 +47,6 @@ export function ImageUploadField({
   const handleFile = async (file: File) => {
     setError(null);
 
-    // Validate type here (not just via the picker's `accept`), because the
-    // drag-and-drop path bypasses `accept` entirely.
     if (file.type && !isTypeAccepted(file.type)) {
       setError(
         bucket === "portfolio-documents"
@@ -66,20 +63,23 @@ export function ImageUploadField({
 
     setUploading(true);
     try {
-      const supabase = createClient();
-      const safeName = file.name.replace(/\s+/g, "-");
-      const path = `${Date.now()}-${safeName}`;
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, { upsert: false, cacheControl: "3600" });
+      // Upload via the server route (service-role), not directly from the
+      // browser — the password-based admin has no Supabase Auth session.
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", bucket);
 
-      if (uploadError) {
-        setError(uploadError.message);
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const json = (await res.json()) as { url?: string; error?: string };
+
+      if (!res.ok || !json.url) {
+        setError(json.error ?? "Upload failed.");
         return;
       }
-
-      const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-      onChange(data.publicUrl);
+      onChange(json.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed.");
     } finally {

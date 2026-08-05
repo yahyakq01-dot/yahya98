@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ADMIN_COOKIE, verifySessionToken } from "@/lib/adminSession";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ToastProvider } from "@/components/admin/ui/ToastProvider";
 
@@ -11,32 +11,14 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authClient = await createClient();
-  const {
-    data: { user },
-  } = await authClient.auth.getUser();
-
-  if (!user || !user.email) {
+  const cookieStore = await cookies();
+  if (!verifySessionToken(cookieStore.get(ADMIN_COOKIE)?.value)) {
     redirect("/login");
-  }
-
-  // Verify admin status with the service-role client so the check never
-  // depends on the request's JWT reaching PostgREST (which fails on the
-  // post-login redirect and around token refresh).
-  const admin = createAdminClient();
-  const { data: adminCheck } = await admin
-    .from("admin_users")
-    .select("email, full_name")
-    .eq("email", user.email)
-    .maybeSingle();
-
-  if (!adminCheck) {
-    redirect("/login?error=unauthorized");
   }
 
   return (
     <ToastProvider>
-      <AdminShell user={{ email: user.email, fullName: adminCheck.full_name }}>
+      <AdminShell user={{ email: "Admin", fullName: "Yahya Khan" }}>
         {children}
       </AdminShell>
     </ToastProvider>
